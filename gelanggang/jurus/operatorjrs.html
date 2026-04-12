@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Operator - Seni Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .active-jury { background-color: #2563eb !important; color: white; }
+        .panel-glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        
+        /* Animasi Modal */
+        .modal-animate { animation: fadeIn 0.2s ease-out; }
+        
+        /* Animasi Toast */
+        .toast-enter { transform: translateX(120%); }
+        .toast-active { transform: translateX(0); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-exit { transform: translateX(120%); transition: transform 0.3s ease-in; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans pb-10">
+
+    <div id="toast-container" class="fixed top-6 right-6 z-[200] space-y-3"></div>
+
+    <nav class="bg-white border-b sticky top-0 z-50 px-6 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <h1 class="font-black italic uppercase tracking-tighter text-xl">Seni <span class="text-blue-600">Master</span></h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div id="conn-status" class="flex items-center gap-2 text-[10px] font-bold uppercase text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                <i class="fas fa-circle animate-pulse"></i> System Live (Pool Mode)
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest">Konfigurasi Petugas</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-bold">Jumlah Juri</label>
+                            <span id="jury-val" class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">3</span>
+                        </div>
+                        <input type="range" id="jury-range" min="1" max="10" value="3" oninput="updateOfficialLabel('jury', this.value)" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                            <span class="text-sm font-medium">Aktifkan Dewan 1</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="dewan1-check" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                            <span class="text-sm font-medium">Aktifkan Dewan 2</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="dewan2-check" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                            <span class="text-sm font-medium">Ketua Pertandingan</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="ketua-check" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                    <button onclick="openApproval()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-black transition-all">
+                        UPDATE PETUGAS
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-8 space-y-6">
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                <div class="flex items-center gap-2 mb-6">
+                    <i class="fas fa-id-card text-blue-600"></i>
+                    <h3 class="font-black text-lg uppercase">Data Pertandingan</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-red-50 rounded-2xl border border-red-100">
+                        <label class="text-[10px] font-black text-red-500 uppercase ml-2">Sudut Merah</label>
+                        <input type="text" id="namaMerah" placeholder="Nama Peserta Merah" class="w-full bg-white p-3 mt-1 rounded-xl border border-red-100 outline-none focus:ring-2 focus:ring-red-500 font-bold mb-3">
+                        <input type="text" id="kontingenMerah" placeholder="Kontingen Merah" class="w-full bg-white p-3 rounded-xl border border-red-100 outline-none focus:ring-2 focus:ring-red-500 font-bold">
+                    </div>
+                    
+                    <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                        <label class="text-[10px] font-black text-blue-500 uppercase ml-2">Sudut Biru</label>
+                        <input type="text" id="namaBiru" placeholder="Nama Peserta Biru" class="w-full bg-white p-3 mt-1 rounded-xl border border-blue-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold mb-3">
+                        <input type="text" id="kontingenBiru" placeholder="Kontingen Biru" class="w-full bg-white p-3 rounded-xl border border-blue-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Tampil Pertama</label>
+                        <select id="tampilPertama" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-100 font-bold outline-none">
+                            <option value="MERAH">SUDUT MERAH</option>
+                            <option value="BIRU">SUDUT BIRU</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Kategori</label>
+                        <select id="kategori" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-100 font-bold outline-none">
+                            <option>TUNGGAL</option>
+                            <option>GANDA</option>
+                            <option>REGU</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">No. Undian</label>
+                            <input type="number" id="noUndian" placeholder="00" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Pool</label>
+                            <input type="text" id="pool" placeholder="A / B / C" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Babak Pertandingan</label>
+                        <input type="text" id="babak" placeholder="Penyisihan / Final" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="updateMatchInfo()" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all">
+                        KIRIM DATA & TAMPILKAN PERTAMA
+                    </button>
+                    <button onclick="openResetModal()" class="bg-slate-100 text-slate-400 px-6 rounded-2xl hover:text-red-500 transition-all">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                <div class="flex items-center gap-2 mb-6">
+                    <i class="fas fa-tower-broadcast text-blue-600"></i>
+                    <h3 class="font-black text-lg uppercase">Kontrol Broadcast Scoreboard</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="finishMatch()" class="bg-emerald-600 text-white p-6 rounded-2xl shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all flex flex-col items-center gap-2 group">
+                        <i class="fas fa-flag-checkered text-3xl group-hover:scale-110 transition-transform"></i>
+                        <div class="text-center">
+                            <span class="block font-black text-lg uppercase leading-none">Selesai Pertandingan</span>
+                            <span class="text-[10px] opacity-70 font-bold uppercase">Tampilkan Modal Hasil di Scoreboard</span>
+                        </div>
+                    </button>
+
+                    <button onclick="openGlobalResetModal()" class="bg-slate-100 text-slate-500 p-6 rounded-2xl hover:bg-red-50 hover:text-red-600 transition-all flex flex-col items-center gap-2 group">
+                        <i class="fas fa-power-off text-3xl group-hover:rotate-90 transition-transform"></i>
+                        <div class="text-center">
+                            <span class="block font-black text-lg uppercase leading-none">Reset Sistem Juri</span>
+                            <span class="text-[10px] opacity-70 font-bold uppercase">Bersihkan Skor & Siapkan Partai Baru</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="approval-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl modal-animate">
+            <div class="bg-amber-100 text-amber-600 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-xl font-black text-center mb-2">Konfirmasi Perubahan</h3>
+            <p class="text-slate-500 text-center text-sm mb-8">Apakah Anda yakin ingin memperbarui konfigurasi juri?</p>
+            <div class="flex gap-3">
+                <button onclick="closeApproval()" class="flex-1 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 transition-all">BATAL</button>
+                <button onclick="confirmSaveOfficial()" class="flex-1 py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-all">YA, UPDATE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl modal-animate">
+            <div class="bg-amber-100 text-amber-600 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
+                <i class="fas fa-eraser"></i>
+            </div>
+            <h3 class="text-xl font-black text-center mb-2">Bersihkan Inputan?</h3>
+            <p class="text-slate-500 text-center text-sm mb-8">Tindakan ini hanya akan mengosongkan formulir di layar ini tanpa mereset skor yang sedang berjalan.</p>
+            <div class="flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 transition-all">BATAL</button>
+                <button onclick="confirmResetLayar()" class="flex-1 py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-all">YA, BERSIHKAN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="global-reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl modal-animate border-t-8 border-red-500">
+            <div class="bg-red-100 text-red-600 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <h3 class="text-xl font-black text-center mb-2">Reset Seluruh Sistem?</h3>
+            <p class="text-slate-500 text-center text-sm mb-8">Ini akan menghapus skor juri, mereset timer, dan menutup modal hasil di scoreboard. Gunakan hanya saat beralih ke partai baru.</p>
+            <div class="flex gap-3">
+                <button onclick="closeGlobalResetModal()" class="flex-1 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 transition-all">BATAL</button>
+                <button onclick="confirmGlobalReset()" class="flex-1 py-3 rounded-xl font-bold bg-red-600 text-white hover:bg-red-700 transition-all">YA, RESET SEMUA</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentJuryCount = 3;
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colorClass = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+            toast.className = `flex items-center gap-3 ${colorClass} text-white px-6 py-4 rounded-2xl shadow-xl font-bold toast-enter`;
+            toast.innerHTML = `<i class="fas ${iconClass} text-xl"></i><div class="text-sm uppercase tracking-tight">${message}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('toast-active'), 10);
+            setTimeout(() => {
+                toast.classList.replace('toast-active', 'toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Logic Modals ---
+        function openApproval() { document.getElementById('approval-modal').classList.replace('hidden', 'flex'); }
+        function closeApproval() { document.getElementById('approval-modal').classList.replace('flex', 'hidden'); }
+
+        function openResetModal() { document.getElementById('reset-modal').classList.replace('hidden', 'flex'); }
+        function closeResetModal() { document.getElementById('reset-modal').classList.replace('flex', 'hidden'); }
+
+        function openGlobalResetModal() { document.getElementById('global-reset-modal').classList.replace('hidden', 'flex'); }
+        function closeGlobalResetModal() { document.getElementById('global-reset-modal').classList.replace('flex', 'hidden'); }
+
+        // --- Logic Buttons ---
+
+        function finishMatch() {
+            db.ref('seni_match/system').update({
+                phase: 'finished',
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                showToast("Selesai! Modal Kemenangan muncul di Scoreboard", "success");
+            });
+        }
+
+        function confirmGlobalReset() {
+            const resetData = {
+                'live_scores/seni': null,
+                'seni_match/status_juri': null,
+                'seni_match/timer': "03:00",
+                'seni_match/system/phase': 'waiting',
+                'seni_match/active_athlete/penalty': 0
+            };
+
+            db.ref().update(resetData).then(() => {
+                closeGlobalResetModal();
+                showToast("Sistem Berhasil Direset Total", "success");
+            });
+        }
+
+        function confirmResetLayar() {
+            document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => input.value = "");
+            document.getElementById('kategori').selectedIndex = 0;
+            document.getElementById('tampilPertama').selectedIndex = 0;
+            closeResetModal();
+            showToast("Inputan di layar berhasil dibersihkan", "success");
+        }
+
+        function updateOfficialLabel(type, val) {
+            if(type === 'jury') {
+                currentJuryCount = val;
+                document.getElementById('jury-val').innerText = val;
+            }
+        }
+
+        function confirmSaveOfficial() {
+            const config = {
+                juryCount: parseInt(currentJuryCount),
+                dewan1Active: document.getElementById('dewan1-check').checked,
+                dewan2Active: document.getElementById('dewan2-check').checked,
+                ketuaActive: document.getElementById('ketua-check').checked,
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+            db.ref('seni_match/config').update(config).then(() => {
+                closeApproval();
+                showToast("Konfigurasi Petugas Berhasil Diperbarui");
+            });
+        }
+
+        function updateMatchInfo() {
+            const first = document.getElementById('tampilPertama').value;
+            const common = {
+                pool: document.getElementById('pool').value.toUpperCase(),
+                babak: document.getElementById('babak').value.toUpperCase(),
+                kategori: document.getElementById('kategori').value.toUpperCase(),
+                noUndian: document.getElementById('noUndian').value
+            };
+            const dataFull = {
+                merah: { nama: document.getElementById('namaMerah').value, kontingen: document.getElementById('kontingenMerah').value, sudut: 'MERAH' },
+                biru: { nama: document.getElementById('namaBiru').value, kontingen: document.getElementById('kontingenBiru').value, sudut: 'BIRU' },
+                common: common
+            };
+
+            if(!dataFull.merah.nama || !dataFull.biru.nama) return showToast("Lengkapi nama peserta!", "error");
+
+            db.ref('seni_match/standby_data').set(dataFull).then(() => {
+                const activeAthlete = first === 'MERAH' ? dataFull.merah : dataFull.biru;
+                db.ref('seni_match/active_athlete').set({ ...activeAthlete, ...common, penalty: 0 }).then(() => {
+                    showToast(`Data Terkirim. ${first} Tampil Pertama`);
+                });
+            });
+        }
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

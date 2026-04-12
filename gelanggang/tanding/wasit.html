@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Juri</title>
+    <!-- My Style -->
+        <link rel="stylesheet" href="../../assets/css/gelanggang/tanding/wasit.css">
+    <!-- My Style End -->
+</head>
+<body onclick="enableAudio()"> 
+
+<div class="info-bar">
+    <div id="juriId" style="font-weight: 900;">JURI ?</div>
+    <div class="partai-badge">PARTAI <span id="partaiDisp">-</span></div>
+    <div id="babakDisp" class="babak-info">BABAK -</div> <div style="font-weight: 900;">RONDE <span id="roundDisp">1</span></div>
+</div>
+
+<div class="info-bottom" style="display:none">
+    <span id="eventDisp"></span><span id="kategoriDisp"></span><span id="kelasDisp"></span>
+</div>
+
+<div class="atlet-header">
+    <div class="atlet-card b">
+        <span id="teamBiru" style="font-size: 0.6rem; display: block; opacity: 0.9; font-weight: 700;">TEAM BIRU</span>
+        <span class="atlet-nama" id="namaBiru">BIRU</span>
+        <span class="hit-counter" style="display:none">LOG: <span id="countB">0</span></span>
+    </div>
+    <div class="atlet-card r">
+        <span id="teamMerah" style="font-size: 0.6rem; display: block; opacity: 0.9; font-weight: 700;">TEAM MERAH</span>
+        <span class="atlet-nama" id="namaMerah">MERAH</span>
+        <span class="hit-counter" style="display:none">LOG: <span id="countR">0</span></span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="side-wrapper">
+        <div class="side blue-side">
+            <button class="btn btn-p" onclick="kirim('Biru', 'pukul')">1<span>PUKUL</span></button>
+            <button class="btn btn-t" onclick="kirim('Biru', 'tendang')">2<span>TENDANG</span></button>
+        </div>
+        <button class="undo-btn" id="undoB" onclick="undo('Biru')" disabled>UNDO BIRU</button>
+    </div>
+
+    <div class="side-wrapper">
+        <div class="side red-side">
+            <button class="btn btn-p" onclick="kirim('Merah', 'pukul')">1<span>PUKUL</span></button>
+            <button class="btn btn-t" onclick="kirim('Merah', 'tendang')">2<span>TENDANG</span></button>
+        </div>
+        <button class="undo-btn" id="undoR" onclick="undo('Merah')" disabled>UNDO MERAH</button>
+    </div>
+</div>
+
+<div class="footer">
+    <div><span id="connDot" class="dot"></span><span id="connText">OFFLINE</span></div>
+    <div id="pingText" style="opacity: 0.6;">-- ms</div>
+    <div onclick="toggleTheme()" style="cursor:pointer">🌓 TEMA</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script src="../../assets/js/auth-check.js"></script>
+<script src="../../assets/js/gelanggang/tanding/script-wasittd.js"></script>
+</body>
+</html>

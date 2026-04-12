@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Kategori — TMS Silat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red:       #c0392b;
+            --red-bright:#e74c3c;
+            --gold:      #c9a84c;
+            --blue:      #3b82f6;
+            --amber:     #f59e0b;
+            --emerald:   #10b981;
+            --purple:    #8b5cf6;
+            --rose:      #f43f5e;
+            --ink:       #0e0e0e;
+            --ink-mid:   #161616;
+            --ink-soft:  #1f1f1f;
+            --ink-card:  #131313;
+            --text:      #f0ede8;
+            --text-muted:#7a7670;
+            --text-faint:#2e2c2a;
+            --border:    rgba(255,255,255,0.07);
+            --font-display:'Bebas Neue', sans-serif;
+            --font-serif: 'DM Serif Display', serif;
+            --font-body:  'DM Sans', sans-serif;
+        }
+
+        html { background: var(--ink); scroll-behavior: smooth; }
+        body {
+            background: var(--ink);
+            color: var(--text);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::selection { background: var(--red); color: #fff; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--ink); }
+        ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+        /* ── BG TEXTURE ── */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(0deg,  rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 72px 72px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-glow {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(192,57,43,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── LAYOUT ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.75rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3.5rem;
+        }
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .logo-wordmark {
+            font-family: var(--font-display);
+            font-size: 20px;
+            letter-spacing: 3px;
+            color: var(--text);
+        }
+        .logo-badge {
+            width: 30px; height: 30px;
+            background: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 12px;
+            color: #fff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .btn-icon {
+            width: 40px; height: 40px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 0;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 16px;
+            height: 40px;
+            border: 1px solid rgba(192,57,43,0.35);
+            background: rgba(192,57,43,0.08);
+            color: var(--red);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { background: rgba(192,57,43,0.18); border-color: var(--red); }
+
+        /* ── HEADER ── */
+        .header {
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .header-left
+        .header-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 0.75rem;
+        }
+        .header-eyebrow::before {
+            content: '';
+            width: 24px; height: 1px;
+            background: var(--red);
+        }
+        .header-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            line-height: 0.93;
+            color: var(--text);
+        }
+        .header-title em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--gold);
+        }
+        .header-right
+        .header-desc {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--text-muted);
+            max-width: 280px;
+            line-height: 1.7;
+        }
+
+        /* ── KATEGORI COUNT ── */
+        .category-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            margin-bottom: 2rem;
+        }
+        .count-num {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        /* ── GRID ── */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+        @media (max-width: 900px) { .categories-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .categories-grid { grid-template-columns: 1fr; } }
+
+        /* ── CARD ── */
+        .cat-card {
+            background: var(--ink);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            transition: background 0.25s;
+            min-height: 260px;
+        }
+        .cat-card:hover { background: var(--ink-soft); }
+
+        /* Index number watermark */
+        .cat-index {
+            position: absolute;
+            top: -10px;
+            right: -8px;
+            font-family: var(--font-display);
+            font-size: 120px;
+            line-height: 1;
+            color: rgba(255,255,255,0.025);
+            letter-spacing: -4px;
+            pointer-events: none;
+            user-select: none;
+            transition: color 0.25s;
+        }
+        .cat-card:hover .cat-index { color: rgba(255,255,255,0.04); }
+
+        /* Accent top line */
+        .cat-accent {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .cat-card:hover .cat-accent { transform: scaleX(1); }
+
+        /* Icon */
+        .cat-icon-wrap {
+            width: 52px; height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 1.75rem;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .cat-card:hover .cat-icon-wrap { transform: scale(1.1); }
+        .cat-icon-wrap::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+        }
+        .cat-icon-wrap i { position: relative; z-index: 1; }
+
+        /* Text */
+        .cat-num {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            margin-bottom: 6px;
+        }
+        .cat-name {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+            line-height: 1;
+            margin-bottom: 0.75rem;
+        }
+        .cat-desc {
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--text-muted);
+            line-height: 1.65;
+            flex: 1;
+        }
+        .cat-cta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 1.75rem;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .cat-card:hover .cat-cta { opacity: 1; transform: translateX(0); }
+        .cat-cta-line {
+            flex: 1;
+            max-width: 30px;
+            height: 1px;
+        }
+
+        /* Corner triangle decoration */
+        .cat-corner {
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 0; height: 0;
+            transition: opacity 0.25s;
+            opacity: 0;
+        }
+        .cat-card:hover .cat-corner { opacity: 1; }
+
+        /* ── COLOR THEMES ── */
+        /* Tanding - Blue */
+        .theme-blue .cat-accent   { background: var(--blue); }
+        .theme-blue .cat-icon-wrap { color: var(--blue); }
+        .theme-blue .cat-icon-wrap::before { background: var(--blue); border-radius: 10px; }
+        .theme-blue .cat-cta      { color: var(--blue); }
+        .theme-blue .cat-cta-line { background: var(--blue); }
+        .theme-blue .cat-corner   { border-right: 36px solid rgba(59,130,246,0.25); border-top: 36px solid transparent; }
+
+        /* Tunggal - Amber */
+        .theme-amber .cat-accent   { background: var(--amber); }
+        .theme-amber .cat-icon-wrap { color: var(--amber); }
+        .theme-amber .cat-icon-wrap::before { background: var(--amber); border-radius: 10px; }
+        .theme-amber .cat-cta      { color: var(--amber); }
+        .theme-amber .cat-cta-line { background: var(--amber); }
+        .theme-amber .cat-corner   { border-right: 36px solid rgba(245,158,11,0.25); border-top: 36px solid transparent; }
+
+        /* Ganda - Emerald */
+        .theme-emerald .cat-accent   { background: var(--emerald); }
+        .theme-emerald .cat-icon-wrap { color: var(--emerald); }
+        .theme-emerald .cat-icon-wrap::before { background: var(--emerald); border-radius: 10px; }
+        .theme-emerald .cat-cta      { color: var(--emerald); }
+        .theme-emerald .cat-cta-line { background: var(--emerald); }
+        .theme-emerald .cat-corner   { border-right: 36px solid rgba(16,185,129,0.25); border-top: 36px solid transparent; }
+
+        /* Regu - Purple */
+        .theme-purple .cat-accent   { background: var(--purple); }
+        .theme-purple .cat-icon-wrap { color: var(--purple); }
+        .theme-purple .cat-icon-wrap::before { background: var(--purple); border-radius: 10px; }
+        .theme-purple .cat-cta      { color: var(--purple); }
+        .theme-purple .cat-cta-line { background: var(--purple); }
+        .theme-purple .cat-corner   { border-right: 36px solid rgba(139,92,246,0.25); border-top: 36px solid transparent; }
+
+        /* Solo Kreatif - Rose */
+        .theme-rose .cat-accent   { background: var(--rose); }
+        .theme-rose .cat-icon-wrap { color: var(--rose); }
+        .theme-rose .cat-icon-wrap::before { background: var(--rose); border-radius: 10px; }
+        .theme-rose .cat-cta      { color: var(--rose); }
+        .theme-rose .cat-cta-line { background: var(--rose); }
+        .theme-rose .cat-corner   { border-right: 36px solid rgba(244,63,94,0.25); border-top: 36px solid transparent; }
+
+        /* WIDE CARD - Solo Kreatif spans 2 cols on mid screens */
+        @media (min-width: 560px) and (max-width: 900px) {
+            .cat-card.wide { grid-column: span 2; }
+        }
+
+        /* ── FOOTER ── */
+        .page-footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .page-footer p {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+        }
+        .page-footer span { color: var(--red); }
+
+        /* ── LIVE INDICATOR ── */
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #34c38f;
+            border: 1px solid rgba(52,195,143,0.25);
+            padding: 4px 12px;
+            background: rgba(52,195,143,0.06);
+        }
+        .live-dot {
+            width: 6px; height: 6px;
+            background: #34c38f;
+            border-radius: 50%;
+            animation: live-pulse 1.5s infinite;
+        }
+        @keyframes live-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ── CONFIRM MODAL ── */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            display: none;
+        }
+        .modal-bg.open { display: flex; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box {
+            background: var(--ink-mid);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+        .modal-top { height: 2px; background: var(--red); }
+        .modal-body { padding: 2.5rem; }
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        .modal-sub {
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        .modal-actions { display: flex; gap: 0.75rem; }
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-confirm-logout {
+            flex: 1;
+            padding: 12px;
+            background: var(--red);
+            border: none;
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-confirm-logout:hover { background: var(--red-bright); }
+
+        /* ── REVEAL ANIMATION ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s, transform 0.6s;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: 0.05s; }
+        .delay-2 { transition-delay: 0.10s; }
+        .delay-3 { transition-delay: 0.15s; }
+        .delay-4 { transition-delay: 0.20s; }
+        .delay-5 { transition-delay: 0.25s; }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="page">
+
+    <!-- TOPBAR -->
+    <div class="topbar reveal">
+        <a href="../index.html" class="topbar-logo">
+            <span class="logo-wordmark">SCORE</span>
+            <div class="logo-badge">IN</div>
+        </a>
+        <div class="topbar-right">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                Sistem Aktif
+            </div>
+            <button class="btn-icon" onclick="toggleTheme()" title="Toggle tema">
+                <i class="fas fa-circle-half-stroke" id="theme-icon"></i>
+            </button>
+            <button class="btn-logout" onclick="openLogoutModal()">
+                <i class="fas fa-right-from-bracket"></i>
+                <span>Keluar</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left reveal delay-1">
+            <div class="header-eyebrow">Operator Panel</div>
+            <h1 class="header-title">Pilih<br><em>Kategori</em></h1>
+        </div>
+        <div class="header-right reveal delay-2">
+            <p class="header-desc">Pilih jenis kategori pertandingan yang akan dinilai pada sesi ini.</p>
+        </div>
+    </div>
+
+    <!-- COUNT -->
+    <div class="category-count reveal delay-2">
+        <span class="count-num">05</span>
+        <span>Kategori Tersedia</span>
+    </div>
+
+    <!-- GRID -->
+    <div class="categories-grid reveal delay-3">
+
+        <!-- TANDING -->
+        <div class="cat-card theme-blue" onclick="goTo('tanding')">
+            <div class="cat-accent"></div>
+            <div class="cat-index">1</div>
+            <div class="cat-corner"></div>
+            <div class="cat-icon-wrap">
+                <i class="fas fa-hand-rock"></i>
+            </div>
+            <p class="cat-num">01 — Kategori Tarung</p>
+            <h3 class="cat-name">Tanding</h3>
+            <p class="cat-desc">Pertarungan kontak langsung antar pesilat dalam format satu lawan satu.</p>
+            <div class="cat-cta">
+                <div class="cat-cta-line"></div>
+                Masuk ke Kategori
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </div>
+
+        <!-- TUNGGAL -->
+        <div class="cat-card theme-amber" onclick="goTo('tunggal')">
+            <div class="cat-accent"></div>
+            <div class="cat-index">2</div>
+            <div class="cat-corner"></div>
+            <div class="cat-icon-wrap">
+                <i class="fas fa-user-ninja"></i>
+            </div>
+            <p class="cat-num">02 — Kategori Seni</p>
+            <h3 class="cat-name">Tunggal</h3>
+            <p class="cat-desc">Penampilan jurus baku secara perorangan dengan mantap dan benar.</p>
+            <div class="cat-cta">
+                <div class="cat-cta-line"></div>
+                Masuk ke Kategori
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </div>
+
+        <!-- GANDA -->
+        <div class="cat-card theme-emerald" onclick="goTo('ganda')">
+            <div class="cat-accent"></div>
+            <div class="cat-index">3</div>
+            <div class="cat-corner"></div>
+            <div class="cat-icon-wrap">
+                <i class="fas fa-users"></i>
+            </div>
+            <p class="cat-num">03 — Kategori Seni</p>
+            <h3 class="cat-name">Ganda</h3>
+            <p class="cat-desc">Penampilan teknik serang bela dua orang pesilat secara estetis dan terkoordinasi.</p>
+            <div class="cat-cta">
+                <div class="cat-cta-line"></div>
+                Masuk ke Kategori
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </div>
+
+        <!-- REGU -->
+        <div class="cat-card theme-purple" onclick="goTo('regu')">
+            <div class="cat-accent"></div>
+            <div class="cat-index">4</div>
+            <div class="cat-corner"></div>
+            <div class="cat-icon-wrap">
+                <i class="fas fa-users-rays"></i>
+            </div>
+            <p class="cat-num">04 — Kategori Seni</p>
+            <h3 class="cat-name">Regu</h3>
+            <p class="cat-desc">Penampilan jurus baku tiga pesilat secara kompak, sinkron, dan teratur.</p>
+            <div class="cat-cta">
+                <div class="cat-cta-line"></div>
+                Masuk ke Kategori
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </div>
+
+        <!-- SOLO KREATIF -->
+        <div class="cat-card theme-rose wide" onclick="goTo('solo_kreatif')">
+            <div class="cat-accent"></div>
+            <div class="cat-index">5</div>
+            <div class="cat-corner"></div>
+            <div class="cat-icon-wrap">
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </div>
+            <p class="cat-num">05 — Kategori Seni Bebas</p>
+            <h3 class="cat-name">Solo Kreatif</h3>
+            <p class="cat-desc">Penampilan jurus bebas ciptaan pesilat sendiri dengan iringan musik yang ekspresif.</p>
+            <div class="cat-cta">
+                <div class="cat-cta-line"></div>
+                Masuk ke Kategori
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="page-footer reveal">
+        <p>Tournament Management System · <span>TMS Silat</span> © 2026</p>
+        <p>Bayu Reviyadi · <span>Informatics UNMA</span></p>
+    </div>
+
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="modal-bg" id="logoutModal">
+    <div class="modal-box">
+        <div class="modal-top"></div>
+        <div class="modal-body">
+            <h3 class="modal-title">Keluar?</h3>
+            <p class="modal-sub">Sesi Anda akan diakhiri dan Anda akan diarahkan ke halaman login.</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeLogoutModal()">Batal</button>
+                <button class="btn-confirm-logout" onclick="confirmLogout()">
+                    <i class="fas fa-right-from-bracket"></i> Ya, Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="../assets/js/auth-check.js"></script>
+
+<script>
+    const db = firebase.database();
+
+    // ── AUTH CHECK ──
+    const myRole = localStorage.getItem('userRole');
+    const isAuth = localStorage.getItem('isAuth');
+    if (!isAuth || !myRole) window.location.href = "../auth/login.html";
+
+    // ── FORCE LOGOUT LISTENER ──
+    if (typeof db !== 'undefined') {
+        db.ref('users/' + myRole + '/isLoggedIn').on('value', snap => {
+            if (snap.val() === false) {
+                localStorage.clear();
+                window.location.href = "../auth/login.html?role=operator";
+            }
+        });
+    }
+
+    // ── THEME ──
+    let isDark = true;
+    function toggleTheme() {
+        isDark = !isDark;
+        const r = document.documentElement;
+        if (!isDark) {
+            r.style.setProperty('--ink',        '#f5f4f0');
+            r.style.setProperty('--ink-mid',    '#eeece8');
+            r.style.setProperty('--ink-soft',   '#e5e3de');
+            r.style.setProperty('--ink-card',   '#f0ede8');
+            r.style.setProperty('--text',       '#1a1a1a');
+            r.style.setProperty('--text-muted', '#6b6760');
+            r.style.setProperty('--text-faint', '#c0bdb8');
+            r.style.setProperty('--border',     'rgba(0,0,0,0.09)');
+            document.getElementById('theme-icon').className = 'fas fa-moon';
+        } else {
+            r.style.setProperty('--ink',        '#0e0e0e');
+            r.style.setProperty('--ink-mid',    '#161616');
+            r.style.setProperty('--ink-soft',   '#1f1f1f');
+            r.style.setProperty('--ink-card',   '#131313');
+            r.style.setProperty('--text',       '#f0ede8');
+            r.style.setProperty('--text-muted', '#7a7670');
+            r.style.setProperty('--text-faint', '#2e2c2a');
+            r.style.setProperty('--border',     'rgba(255,255,255,0.07)');
+            document.getElementById('theme-icon').className = 'fas fa-circle-half-stroke';
+        }
+    }
+
+    // ── NAVIGATION ──
+    function goTo(category) {
+        const map = {
+            'tanding':     'tanding/scoring_tanding.html',
+            'tunggal':     'jurus/scoring_jurus.html',
+            'ganda':       'ganda/scoring_ganda.html',
+            'regu':        'regu/scoring_regu.html',
+            'solo_kreatif':'solo_kreatif/scoring_solo_kreatif.html',
+        };
+        if (map[category]) window.location.href = map[category];
+    }
+
+    // ── LOGOUT MODAL ──
+    function openLogoutModal()  { document.getElementById('logoutModal').classList.add('open'); }
+    function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('open'); }
+    document.getElementById('logoutModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('logoutModal')) closeLogoutModal();
+    });
+
+    function confirmLogout() {
+        if (typeof db !== 'undefined') {
+            db.ref('users/' + myRole).update({ isLoggedIn: false }).then(() => {
+                localStorage.clear();
+                window.location.href = "../auth/login.html?role=operator";
+            });
+        } else {
+            localStorage.clear();
+            window.location.href = "../auth/login.html?role=operator";
+        }
+    }
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── SECURITY ──
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73,74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault(); return false;
+        }
+    });
+</script>
+</body>
+</html>

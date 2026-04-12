@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Penilaian Juri Seni - TMS Silat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { touch-action: manipulation; }
+        .flow-btn.active { background-color: #2563eb; color: white; border-color: #1d4ed8; }
+        .ready-active { background-color: #10b981 !important; border-color: #059669 !important; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        /* Perbaikan: Memastikan elemen benar-benar tidak bisa diklik saat terkunci */
+        .is-locked { opacity: 0.5; pointer-events: none; filter: grayscale(0.8); }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans">
+
+    <div class="bg-white border-b p-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div id="atlet-flag" class="w-10 h-7 bg-slate-200 rounded shadow-sm flex items-center justify-center text-[10px] font-bold text-slate-400">IMG</div>
+            <div>
+                <h2 id="disp-nama" class="text-blue-700 font-bold leading-none text-sm uppercase">Memuat Nama...</h2>
+                <p id="disp-kontingen" class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Kontingen</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <h1 id="disp-kategori" class="text-sm font-black uppercase tracking-tighter italic">TUNGGAL</h1>
+            <p id="juri-label" class="text-[9px] font-bold text-slate-400 uppercase">JURI SENI ?</p>
+        </div>
+    </div>
+
+    <div id="ui-pool" class="hidden flex-1 flex flex-col">
+        <div id="status-timer" class="bg-amber-100 text-amber-800 text-[10px] font-bold py-1 text-center uppercase tracking-widest transition-colors duration-300">
+            Menunggu Waktu Dimulai (Dewan)
+        </div>
+
+        <main class="flex-1 p-4 max-w-4xl mx-auto w-full space-y-4">
+            
+            <div class="grid grid-cols-12 gap-3 h-48">
+                <button id="btn-ready" onclick="toggleReady()" class="col-span-5 bg-slate-500 rounded-2xl flex flex-col items-center justify-center text-white shadow-lg transition-all duration-300">
+                    <span id="ready-text" class="text-[10px] font-black uppercase mb-3">Jury Ready</span>
+                    <div class="w-20 h-10 bg-white/20 rounded-full flex items-center px-1">
+                        <div id="ready-toggle" class="w-8 h-8 bg-white rounded-full transition-transform duration-300"></div>
+                    </div>
+                </button>
+
+                <div id="score-controls" class="col-span-7 grid grid-cols-7 gap-3 is-locked">
+                    <div class="col-span-2 flex flex-col items-center justify-center text-center gap-2">
+                        <button onclick="changeWrongMove(-1)" class="w-12 h-12 rounded-full bg-white border border-slate-300 flex items-center justify-center text-slate-600 active:bg-slate-100 shadow-sm">
+                            <i class="fas fa-undo-alt text-lg"></i>
+                        </button>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase leading-tight">Undo</p>
+                    </div>
+
+                    <button onclick="changeWrongMove(1)" class="col-span-5 bg-red-600 rounded-2xl flex flex-col items-center justify-center text-white shadow-lg active:bg-red-700 transition-all">
+                        <span class="text-[10px] font-black uppercase mb-2 text-red-200">SALAH GERAK</span>
+                        <i class="fas fa-times text-6xl"></i>
+                        <div class="mt-2 flex items-center gap-2">
+                            <span class="text-xs font-bold bg-black/20 px-2 py-1 rounded">Total: <span id="accuracy-score">0</span></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="flow-section" class="space-y-3 pt-2 is-locked">
+                <p class="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">Kemantapan / Stamina</p>
+                <div id="flow-grid" class="grid grid-cols-5 gap-2"></div>
+            </div>
+
+            <div class="bg-slate-800 rounded-2xl overflow-hidden shadow-xl border-t-4 border-blue-500">
+                <div class="flex justify-between px-6 py-4 items-center">
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-slate-400 block leading-none mb-1">Live Score Preview</span>
+                        <span id="label-mode" class="text-[10px] text-white/50 italic">PENILAIAN TERKUNCI</span>
+                    </div>
+                    <span id="total-score" class="text-4xl font-black text-white italic tracking-tighter">9.90</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="ui-versus" class="hidden flex-1 p-6 flex flex-col gap-6 items-center justify-center">
+        <h3 class="text-slate-400 font-black uppercase text-xs tracking-widest mb-4">Pilih Pemenang</h3>
+        <div class="grid grid-cols-2 gap-6 w-full max-w-2xl h-64">
+            <button onclick="kirimPemenang('Biru')" class="bg-blue-600 rounded-[32px] flex flex-col items-center justify-center gap-4 text-white shadow-2xl active:scale-95 transition-all">
+                <i class="fas fa-user-ninja text-6xl"></i>
+                <span class="font-black text-2xl italic">BIRU</span>
+            </button>
+            <button onclick="kirimPemenang('Merah')" class="bg-red-600 rounded-[32px] flex flex-col items-center justify-center gap-4 text-white shadow-2xl active:scale-95 transition-all">
+                <i class="fas fa-user-ninja text-6xl"></i>
+                <span class="font-black text-2xl italic">MERAH</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="p-4 bg-white border-t flex justify-between items-center shadow-md">
+        <button onclick="resetScore()" class="text-[10px] font-black text-slate-400 uppercase">
+            <i class="fas fa-sync-alt mr-1"></i> Reset
+        </button>
+        <button onclick="submitFinal()" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-black text-sm shadow-lg active:scale-95 transition-all">
+            KIRIM NILAI
+        </button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const params = new URLSearchParams(window.location.search);
+        const idJuri = params.get('id') || "1";
+        const juriPath = `juri_seni_${idJuri}`;
+        document.getElementById('juri-label').innerText = `JURI SENI TUNGGAL ${idJuri}`;
+
+        let wrongMoveCount = 0;
+        let flowScore = 0.00;
+        let isReady = false;
+        let isTimeRunning = false;
+        let currentAthleteId = null;
+        let currentPhase = 'waiting'; 
+
+        const flowGrid = document.getElementById('flow-grid');
+        for(let i=1; i<=10; i++) {
+            let val = (i/100).toFixed(2);
+            flowGrid.innerHTML += `<button onclick="setFlow(${val})" class="flow-btn bg-white border border-slate-200 py-4 rounded-xl text-xs font-black transition-all shadow-sm">${val}</button>`;
+        }
+
+        db.ref('seni_match/system/phase').on('value', snap => {
+            currentPhase = snap.val() || 'waiting';
+            const statusTimer = document.getElementById('status-timer');
+            const flowSection = document.getElementById('flow-section');
+            
+            if (currentPhase === 'penilaian_akhir') {
+                statusTimer.innerText = "PERAGAAN SELESAI - SILAHKAN INPUT STAMINA";
+                statusTimer.className = "bg-indigo-600 text-white text-[10px] font-bold py-1 text-center uppercase tracking-widest";
+                flowSection.classList.remove('is-locked');
+            } else {
+                flowSection.classList.add('is-locked');
+            }
+        });
+
+        db.ref(`live_scores/seni/${juriPath}`).on('value', snap => {
+            if (!snap.exists()) {
+                wrongMoveCount = 0;
+                flowScore = 0.00;
+                document.getElementById('accuracy-score').innerText = "0";
+                document.getElementById('total-score').innerText = "9.90";
+                document.querySelectorAll('.flow-btn').forEach(btn => btn.classList.remove('active'));
+                if(isReady) toggleReady(); 
+            }
+        });
+
+        db.ref('seni_match/system/running').on('value', snap => {
+            isTimeRunning = snap.val() || false;
+            const scoreControls = document.getElementById('score-controls');
+            const statusTimer = document.getElementById('status-timer');
+            const labelMode = document.getElementById('label-mode');
+
+            if(isTimeRunning) {
+                scoreControls.classList.remove('is-locked');
+                statusTimer.innerText = "WAKTU BERJALAN - SILAHKAN MENILAI";
+                statusTimer.className = "bg-green-600 text-white text-[10px] font-bold py-1 text-center uppercase tracking-widest shadow-inner";
+                labelMode.innerText = "PENILAIAN AKTIF";
+            } else if (currentPhase !== 'penilaian_akhir') {
+                scoreControls.classList.add('is-locked');
+                statusTimer.innerText = "MENUNGGU WAKTU DIMULAI (DEWAN)";
+                statusTimer.className = "bg-amber-100 text-amber-800 text-[10px] font-bold py-1 text-center uppercase tracking-widest";
+                labelMode.innerText = "PENILAIAN TERKUNCI";
+            }
+        });
+
+        function toggleReady() {
+            isReady = !isReady;
+            const btn = document.getElementById('btn-ready');
+            const toggle = document.getElementById('ready-toggle');
+            const txt = document.getElementById('ready-text');
+
+            if(isReady) {
+                btn.classList.add('ready-active');
+                toggle.style.transform = 'translateX(40px)';
+                txt.innerText = "JURY IS READY";
+            } else {
+                btn.classList.remove('ready-active');
+                toggle.style.transform = 'translateX(0px)';
+                txt.innerText = "JURY READY?";
+            }
+
+            db.ref(`seni_match/status_juri/${juriPath}`).update({
+                ready: isReady,
+                lastUpdate: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        function changeWrongMove(val) {
+            if(!isTimeRunning) return; 
+            if(!isReady) return alert("Silahkan tekan tombol READY terlebih dahulu!");
+            wrongMoveCount = Math.max(0, wrongMoveCount + val);
+            document.getElementById('accuracy-score').innerText = wrongMoveCount;
+            updateTotal();
+            syncToFirebase();
+        }
+
+        function setFlow(val) {
+            if(!isReady) return alert("Silahkan tekan tombol READY terlebih dahulu!");
+            if(currentPhase !== 'penilaian_akhir') {
+                return alert("Tunggu hingga atlet menyelesaikan gerakan (Instruksi Dewan)!");
+            }
+
+            flowScore = parseFloat(val);
+            document.querySelectorAll('.flow-btn').forEach(btn => {
+                btn.classList.toggle('active', parseFloat(btn.innerText) === val);
+            });
+            updateTotal();
+            syncToFirebase();
+        }
+
+        function updateTotal() {
+            let base = 9.90; 
+            let penalty = wrongMoveCount * 0.01;
+            let total = (base - penalty) + flowScore;
+            document.getElementById('total-score').innerText = total.toFixed(2);
+        }
+
+        function syncToFirebase() {
+            const total = document.getElementById('total-score').innerText;
+            db.ref(`live_scores/seni/${juriPath}`).update({
+                wrongMoves: wrongMoveCount,
+                flow: flowScore,
+                total: parseFloat(total),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        function submitFinal() {
+            if(!isReady) return alert("Anda belum menekan tombol READY!");
+            const total = document.getElementById('total-score').innerText;
+            if(confirm(`Kirim Nilai Akhir: ${total}?`)) {
+                syncToFirebase(); 
+                alert("NILAI BERHASIL TERKIRIM");
+                if(isReady) toggleReady(); 
+            }
+        }
+
+        function resetScore() {
+            if(confirm("Reset semua nilai juri ini?")) {
+                wrongMoveCount = 0;
+                flowScore = 0.00;
+                document.getElementById('accuracy-score').innerText = "0";
+                document.querySelectorAll('.flow-btn').forEach(btn => btn.classList.remove('active'));
+                updateTotal();
+                syncToFirebase();
+            }
+        }
+
+        db.ref('seni_match/system/mode').on('value', snap => {
+            let mode = snap.val() || 'pool';
+            document.getElementById('ui-pool').classList.toggle('hidden', mode !== 'pool');
+            document.getElementById('ui-versus').classList.toggle('hidden', mode !== 'versus');
+        });
+
+        db.ref('seni_match/active_athlete').on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('disp-nama').innerText = data.nama || "PESERTA";
+                document.getElementById('disp-kontingen').innerText = data.kontingen || "KONTINGEN";
+                if(currentAthleteId !== data.nama) {
+                    currentAthleteId = data.nama;
+                    resetScoreDirect();
+                }
+            }
+        });
+
+        function resetScoreDirect() {
+            wrongMoveCount = 0;
+            flowScore = 0.00;
+            document.getElementById('accuracy-score').innerText = "0";
+            document.querySelectorAll('.flow-btn').forEach(btn => btn.classList.remove('active'));
+            updateTotal();
+        }
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard Seni Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --accent: #2563eb;
+            --meta-bg: #f1f5f9;
+            --border: #e2e8f0;
+        }
+
+        body.theme-dark {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --accent: #38bdf8;
+            --meta-bg: #334155;
+            --border: #475569;
+        }
+
+        body.theme-olympic {
+            --bg-body: #e2e8f0;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --accent: #0081C8; 
+            --meta-bg: #f8fafc;
+            --border: #cbd5e1;
+        }
+
+        body.theme-royal {
+            --bg-body: #4c0519; 
+            --bg-card: #701a28;
+            --text-main: #fef3c7;
+            --accent: #fbbf24; 
+            --meta-bg: #991b1b;
+            --border: #b45309;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sb-table {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            position: relative;
+        }
+
+        .row-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            background: var(--meta-bg);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .row-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .athlete-name { font-size: 4.5rem; font-weight: 800; line-height: 1; }
+        .athlete-team { font-size: 2rem; color: var(--accent); font-weight: 600; }
+        .timer-box { font-size: 8rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+        #jury-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: var(--bg-body);
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .juri-container { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 120px; max-width: 250px;}
+        .juri-label-box { background: var(--meta-bg); padding: 0.25rem; border-radius: 4px; text-align: center; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; opacity: 0.8; }
+        .juri-score-box { background: var(--bg-card); border: 2px solid var(--border); padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 2.8rem; font-weight: 800; transition: all 0.3s ease; }
+        .is-ready .juri-score-box { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
+
+        .total-score-badge { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); background: var(--text-main); color: var(--bg-card); padding: 1rem 3rem; border-radius: 12px; text-align: center; z-index: 10; }
+        .hide-element { display: none !important; }
+
+        /* MODAL RESULT STYLES */
+        #result-modal { position: fixed; inset: 0; z-index: 200; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; padding: 2rem; }
+        #result-modal.active { display: flex; }
+        .animate-winner { animation: winner-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes winner-pop { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .glow-blue { box-shadow: 0 0 50px rgba(37, 99, 235, 0.5); }
+        .glow-red { box-shadow: 0 0 50px rgba(220, 38, 38, 0.5); }
+        .tie-breaker-active { background-color: #fefce8 !important; color: #854d0e !important; }
+        .shimmer-effect { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    </style>
+</head>
+<body>
+
+    <div class="sb-table">
+        <div class="row-meta">
+            <div id="display-pool">POOL -</div>
+            <div class="text-center">
+                <div id="display-partai" class="text-sm opacity-70">PARTAI -</div>
+                <div id="display-babak" class="text-2xl">PENYISIHAN</div>
+            </div>
+            <div id="display-tipe" class="text-right opacity-60">TUNGGAL</div>
+        </div>
+
+        <div class="row-main">
+            <div>
+                <div id="display-team" class="athlete-team">KONTINGEN ---</div>
+                <h1 id="display-name" class="athlete-name">---</h1>
+            </div>
+            <div id="final-badge" class="total-score-badge hide-element">
+                <span class="text-xs uppercase font-bold opacity-70">Final Score</span>
+                <div id="final-score" class="text-7xl font-black">0.00</div>
+            </div>
+            <div id="timer" class="timer-box">03:00</div>
+        </div>
+        <div id="jury-row"></div>
+    </div>
+
+    <div id="result-modal">
+        <div class="w-full max-w-2xl flex flex-col items-center">
+            <div id="winner-banner" class="mb-8 p-8 rounded-3xl text-center uppercase font-black italic tracking-tighter text-5xl border-8 relative overflow-hidden w-full bg-white shadow-2xl">
+                <div class="relative z-10">
+                    <i class="fas fa-trophy mr-4"></i>
+                    WINNER: <span id="winner-name">---</span>
+                </div>
+                <div class="shimmer-effect"></div>
+            </div>
+
+            <table class="w-full bg-white rounded-3xl overflow-hidden shadow-2xl text-slate-900">
+                <thead>
+                    <tr class="bg-slate-100 text-[12px] uppercase font-black text-slate-500">
+                        <th class="p-4 text-left pl-8 border-b">Detail Point</th>
+                        <th class="p-4 border-b bg-blue-600 text-white">Biru</th>
+                        <th class="p-4 border-b bg-red-600 text-white">Merah</th>
+                    </tr>
+                </thead>
+                <tbody class="text-2xl font-bold">
+                    <tr>
+                        <td class="p-4 text-left pl-8 text-sm text-slate-400 border-b">Median Juri</td>
+                        <td id="pop-median-biru" class="p-4 text-center text-blue-600 border-b">0.00</td>
+                        <td id="pop-median-merah" class="p-4 text-center text-red-600 border-b">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 text-left pl-8 text-sm text-slate-400 border-b">Waktu</td>
+                        <td id="pop-time-biru" class="p-4 text-center text-slate-600 border-b text-lg">00:00</td>
+                        <td id="pop-time-merah" class="p-4 text-center text-slate-600 border-b text-lg">00:00</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 text-left pl-8 text-sm text-red-400 border-b">Hukuman</td>
+                        <td id="pop-pen-biru" class="p-4 text-center text-red-500 border-b">0.00</td>
+                        <td id="pop-pen-merah" class="p-4 text-center text-red-500 border-b">0.00</td>
+                    </tr>
+                    <tr class="bg-slate-50">
+                        <td class="p-6 text-left pl-8 italic uppercase text-slate-900 border-b">Total Score</td>
+                        <td id="pop-total-biru" class="p-6 text-center text-blue-700 text-5xl font-black border-b">0.00</td>
+                        <td id="pop-total-merah" class="p-6 text-center text-red-700 text-5xl font-black border-b">0.00</td>
+                    </tr>
+                    <tr id="row-sd" class="text-sm text-slate-400">
+                        <td class="p-2 text-left pl-8 uppercase border-b">Std. Deviasi</td>
+                        <td id="pop-sd-biru" class="p-2 text-center border-b">0.0000</td>
+                        <td id="pop-sd-merah" class="p-2 text-center border-b">0.0000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let activeJuryCount = 3;
+        let currentScores = { biru: null, merah: null };
+        let hasCelebrated = false;
+
+        function renderJuries(count) {
+            const container = document.getElementById('jury-row');
+            container.innerHTML = "";
+            for(let i=1; i<=count; i++) {
+                container.innerHTML += `
+                    <div id="juri-card-${i}" class="juri-container">
+                        <div class="juri-label-box">Juri ${i}</div>
+                        <div id="val-juri-${i}" class="juri-score-box">0.00</div>
+                    </div>
+                `;
+            }
+        }
+
+        db.ref('seni_match/config').on('value', snap => {
+            const config = snap.val();
+            if(config && config.juryCount) {
+                activeJuryCount = config.juryCount;
+                renderJuries(activeJuryCount);
+            }
+        });
+
+        // Listen Match History (Untuk Data di Modal)
+        db.ref('seni_match/history').limitToLast(2).on('value', snap => {
+            const history = snap.val();
+            if(!history) return;
+            Object.values(history).forEach(match => {
+                const sdt = match.sudut.toLowerCase();
+                currentScores[sdt] = match;
+                document.getElementById(`pop-median-${sdt}`).innerText = match.median_score || "0.00";
+                document.getElementById(`pop-time-${sdt}`).innerText = match.time_display || "00:00";
+                document.getElementById(`pop-pen-${sdt}`).innerText = match.penalty || "0.00";
+                document.getElementById(`pop-total-${sdt}`).innerText = match.final_score || "0.00";
+                document.getElementById(`pop-sd-${sdt}`).innerText = match.sd_score || "0.0000";
+            });
+        });
+
+        // Listen Phase System (Trigger Modal)
+        db.ref('seni_match/system').on('value', snap => {
+            const system = snap.val();
+            const modal = document.getElementById('result-modal');
+            if(system && system.phase === 'finished') {
+                modal.classList.add('active');
+                processWinnerLogic();
+            } else {
+                modal.classList.remove('active');
+                hasCelebrated = false;
+                document.getElementById('row-sd').classList.remove('tie-breaker-active');
+            }
+        });
+
+        function processWinnerLogic() {
+            if (!currentScores.biru || !currentScores.merah || hasCelebrated) return;
+            
+            const totalBiru = parseFloat(currentScores.biru.final_score);
+            const totalMerah = parseFloat(currentScores.merah.final_score);
+            const sdBiru = parseFloat(currentScores.biru.sd_score);
+            const sdMerah = parseFloat(currentScores.merah.sd_score);
+
+            let winner = "";
+            let isTie = false;
+
+            if (totalBiru > totalMerah) winner = "BIRU";
+            else if (totalMerah > totalBiru) winner = "MERAH";
+            else {
+                isTie = true;
+                if (sdBiru < sdMerah) winner = "BIRU";
+                else if (sdMerah < sdBiru) winner = "MERAH";
+                else winner = "DRAW";
+            }
+            displayWinner(winner, isTie);
+            hasCelebrated = true;
+        }
+
+        function displayWinner(winner, isTie) {
+            const banner = document.getElementById('winner-banner');
+            const winnerName = document.getElementById('winner-name');
+            const sdRow = document.getElementById('row-sd');
+            winnerName.innerText = winner;
+            sdRow.classList.toggle('tie-breaker-active', isTie);
+
+            if (winner === 'BIRU') {
+                banner.className = "mb-8 p-8 rounded-3xl text-center uppercase font-black italic tracking-tighter text-5xl border-8 border-blue-600 bg-white text-blue-600 shadow-2xl animate-winner glow-blue w-full";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#2563eb', '#ffffff'] });
+            } else if (winner === 'MERAH') {
+                banner.className = "mb-8 p-8 rounded-3xl text-center uppercase font-black italic tracking-tighter text-5xl border-8 border-red-600 bg-white text-red-600 shadow-2xl animate-winner glow-red w-full";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#dc2626', '#ffffff'] });
+            }
+        }
+
+        // Live updates regular (Scoreboard utama)
+        db.ref('seni_match/active_athlete').on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('display-partai').innerText = "PARTAI " + (data.noUndian || "-");
+                document.getElementById('display-pool').innerText = "POOL " + (data.pool || "-");
+                document.getElementById('display-babak').innerText = data.babak || "PENYISIHAN";
+                document.getElementById('display-name').innerText = data.nama || "---";
+                document.getElementById('display-team').innerText = data.kontingen || "---";
+            }
+        });
+
+        db.ref('live_scores/seni').on('value', snap => {
+            const scores = snap.val() || {};
+            for(let i=1; i<=activeJuryCount; i++) {
+                const s = scores[`juri_seni_${i}`];
+                const el = document.getElementById(`val-juri-${i}`);
+                if(el) el.innerText = s?.total ? s.total.toFixed(2) : "0.00";
+            }
+        });
+
+        db.ref('seni_match/status_juri').on('value', snap => {
+            const statusJuri = snap.val() || {};
+            for(let i=1; i<=activeJuryCount; i++) {
+                const s = statusJuri[`juri_seni_${i}`];
+                const card = document.getElementById(`juri-card-${i}`);
+                if(card) s?.ready ? card.classList.add('is-ready') : card.classList.remove('is-ready');
+            }
+        });
+
+        db.ref('seni_match/timer').on('value', snap => {
+            if(snap.val()) document.getElementById('timer').innerText = snap.val();
+        });
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

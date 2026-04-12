@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dewan Hakim - Control Panel Seni (Median System)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        html, body { 
+            height: 100vh; 
+            overflow: hidden; 
+            background-color: #ffffff; 
+            color: #000000; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        .header-gray {
+            background-color: #94a3b8;
+            padding: 0.75rem;
+            color: white;
+            text-align: center;
+        }
+
+        .stats-table {
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: center;
+            width: 320px;
+            background: white;
+        }
+        .stats-table th {
+            background-color: #22c55e;
+            color: white;
+            border: 1px solid #cbd5e1;
+            padding: 4px;
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+        .stats-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        .sd-header {
+            background-color: #22c55e;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9px;
+        }
+
+        .juri-bar {
+            background-color: #2563eb;
+            color: white;
+            text-align: center;
+            padding: 6px;
+            font-weight: bold;
+            border: 1px solid white;
+            transition: all 0.3s ease;
+        }
+        
+        .bg-sudut-merah { background-color: #dc2626 !important; }
+        .bg-sudut-biru { background-color: #2563eb !important; }
+        .text-sudut-merah { color: #dc2626 !important; }
+        .text-sudut-biru { color: #2563eb !important; }
+
+        .juri-bar.not-ready {
+            background-color: #1e293b !important;
+            opacity: 0.5;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+        .popup-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .popup-table th, .popup-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .popup-header { background-color: #f1f5f9; font-weight: bold; }
+
+        /* SIDEBAR STYLES */
+        #sidebar-penalty {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sidebar-penalty.active {
+            left: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            z-index: 40;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .btn-penalty {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .btn-penalty:hover { border-color: #ef4444; background-color: #fef2f2; }
+        .btn-penalty span { color: #ef4444; font-weight: 900; }
+
+        /* TOAST NOTIFICATION STYLES */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast.success { border-left: 5px solid #22c55e; }
+        .toast.error { border-left: 5px solid #ef4444; }
+        .toast.warning { border-left: 5px solid #f59e0b; }
+        .toast.info { border-left: 5px solid #3b82f6; }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <div id="toast-container"></div>
+
+    <div id="winnerModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-center font-black text-xl mb-4 uppercase italic">Hasil Pertandingan</h2>
+            <table class="popup-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="popup-header">Detail Point</th>
+                        <th colspan="2" class="popup-header">Score Result</th>
+                    </tr>
+                    <tr>
+                        <th class="bg-blue-600 text-white">Biru</th>
+                        <th class="bg-red-600 text-white">Merah</th>
+                    </tr>
+                </thead>
+                <tbody id="popup-body-results">
+                    <tr>
+                        <td class="text-left font-bold italic">Median Juri</td>
+                        <td id="pop-median-biru">-</td>
+                        <td id="pop-median-merah">-</td>
+                    </tr>
+                    <tr>
+                        <td class="text-left font-bold">Waktu</td>
+                        <td id="pop-time-biru">-</td>
+                        <td id="pop-time-merah">-</td>
+                    </tr>
+                    <tr>
+                        <td class="text-left font-bold text-red-600">Total Hukuman</td>
+                        <td id="pop-pen-biru">-</td>
+                        <td id="pop-pen-merah">-</td>
+                    </tr>
+                    <tr class="bg-gray-100 font-black">
+                        <td class="text-left">Total Score</td>
+                        <td id="pop-total-biru">-</td>
+                        <td id="pop-total-merah">-</td>
+                    </tr>
+                    <tr>
+                        <td class="text-left text-[10px] text-slate-400">Standar Deviasi</td>
+                        <td id="pop-sd-biru" class="text-[10px]">-</td>
+                        <td id="pop-sd-merah" class="text-[10px]">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="flex flex-col gap-3">
+                <select id="finalWinnerSelect" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold outline-none focus:border-blue-500">
+                    <option value="">Pilih Sudut Pemenang</option>
+                    <option value="BIRU">SUDUT BIRU</option>
+                    <option value="MERAH">SUDUT MERAH</option>
+                </select>
+                <button onclick="confirmFinalWinner()" class="w-full bg-blue-700 text-white py-3 rounded-xl font-black uppercase tracking-widest shadow-lg">Konfirmasi Sah</button>
+                <button onclick="closeWinnerModal()" class="text-slate-400 font-bold text-sm uppercase">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar-penalty" class="p-6">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="font-black text-slate-800 italic uppercase tracking-widest">Input Hukuman</h3>
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Potongan Nilai: -0.50</p>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto pr-2">
+            <button onclick="applyPenalty(0.50, 'Waktu')" class="btn-penalty border-red-100">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-stopwatch text-red-500 w-5"></i>
+                    <span>Pelanggaran Waktu</span>
+                </div>
+                <span>-0.50</span>
+            </button>
+            <button onclick="applyPenalty(0.50, 'Area')" class="btn-penalty">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-vector-square text-slate-400 w-5"></i>
+                    <span>Keluar Gelanggang</span>
+                </div>
+                <span>-0.50</span>
+            </button>
+            <button onclick="applyPenalty(0.50, 'Senjata')" class="btn-penalty">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-tools text-slate-400 w-5"></i>
+                    <span>Senjata Jatuh/Lantai</span>
+                </div>
+                <span>-0.50</span>
+            </button>
+            <button onclick="applyPenalty(0.50, 'Pakaian')" class="btn-penalty">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-tshirt text-slate-400 w-5"></i>
+                    <span>Pakaian/Atribut</span>
+                </div>
+                <span>-0.50</span>
+            </button>
+            <button onclick="applyPenalty(0.50, 'Durasi')" class="btn-penalty">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-hourglass-half text-slate-400 w-5"></i>
+                    <span>Diam > 5 Detik</span>
+                </div>
+                <span>-0.50</span>
+            </button>
+        </div>
+
+        <button onclick="resetPenaltyValue()" class="mt-4 w-full py-3 border-2 border-dashed border-red-300 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-all text-xs uppercase tracking-widest">
+            <i class="fas fa-trash-alt mr-2"></i> Reset Semua Penalti
+        </button>
+    </div>
+
+    <div class="header-gray">
+        <div class="bg-slate-800 max-w-xs mx-auto py-0.5 rounded mb-2 shadow-lg">
+            <h1 class="text-lg font-black uppercase italic tracking-widest">Pencak Silat Seni</h1>
+        </div>
+        <div class="grid grid-cols-3 font-black text-lg italic uppercase tracking-tighter">
+            <div id="disp-kategori-umur">---</div>
+            <div id="disp-babak">---</div>
+            <div id="disp-kategori-seni">---</div>
+        </div>
+    </div>
+
+    <div class="flex-1 max-w-6xl mx-auto px-6 flex flex-col justify-center gap-6 w-full relative">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex flex-col text-center md:text-left">
+                <span id="label-sudut" class="font-black text-lg uppercase tracking-tighter">---</span>
+                <h2 id="disp-name" class="text-4xl font-black text-slate-900 leading-none uppercase italic">| PESERTA |</h2>
+                <p id="disp-team" class="text-slate-500 font-bold mt-1 uppercase tracking-widest text-sm">KONTINGEN ---</p>
+            </div>
+
+            <div class="shadow-lg rounded-lg overflow-hidden border border-slate-200">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th class="bg-indigo-600">Median</th>
+                            <th>Hukuman</th>
+                            <th>Waktu Penampilan</th>
+                            <th class="bg-blue-600 text-white">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="stat-median" class="text-indigo-700">0.00</td>
+                            <td id="stat-penalty" class="text-red-600">0.00</td>
+                            <td id="stat-time" class="font-black text-slate-800">00:00</td>
+                            <td id="stat-total" class="text-blue-700">0.00</td>
+                        </tr>
+                        <tr class="sd-header">
+                            <td colspan="5">Standard Deviation</td> </tr>
+                        <tr>
+                            <td colspan="5" id="stat-sd" class="text-emerald-600 italic py-1 font-black">0.0000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="w-full flex flex-col items-center">
+            <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-3 self-start ml-[15%]">Live Monitor Juri</h3>
+            <div id="container-juri" class="flex flex-wrap justify-center gap-2 w-full max-w-4xl"></div>
+        </div>
+
+        <div class="flex flex-col items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-inner">
+            <div class="flex flex-wrap justify-center gap-2">
+                <button onclick="toggleSidebar()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-lg">
+                    <i class="fas fa-gavel mr-1"></i> Input Hukuman
+                </button>
+                <div class="w-px h-8 bg-slate-300 mx-2"></div>
+                
+                <button onclick="location.reload()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all">
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh
+                </button>
+
+                <button id="btn-gerakan-selesai" onclick="handleGerakanSelesai()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all hidden">
+                    <i class="fas fa-check-double mr-1"></i> Gerakan Selesai
+                </button>
+
+                <button id="btn-start" onclick="startTimer()" class="bg-amber-500 hover:bg-amber-600 text-black px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-md">
+                    <i class="fas fa-play mr-1"></i> Start
+                </button>
+
+                <button onclick="resetJuriReady()" class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all">
+                    <i class="fas fa-users mr-1"></i> Reset Status
+                </button>
+            </div>
+
+            <div id="post-match-controls" class="hidden mt-4 flex flex-col items-center gap-3 w-full">
+                <button onclick="tampilkanSudutLawan()" class="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest shadow-lg transition-all">
+                    Tampilkan Sudut Satunya
+                </button>
+                <button onclick="openWinnerModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-12 py-3 rounded-xl font-black text-lg uppercase tracking-widest transition-all shadow-xl">
+                    Sah & Tentukan Pemenang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let timeElapsed = 0; 
+        let timerInterval;
+        let currentJuryCount = 3; 
+        let isGerakanSelesai = false;
+
+        let matchScores = {
+            BIRU: { sd: "0.0000", time: "00:00", penalty: "0.00", median: "0.00", final_score: "0.00" },
+            MERAH: { sd: "0.0000", time: "00:00", penalty: "0.00", median: "0.00", final_score: "0.00" }
+        };
+
+        // --- FUNGSI TOAST ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-info-circle';
+            if(type === 'success') icon = 'fa-check-circle';
+            if(type === 'error') icon = 'fa-exclamation-triangle';
+            if(type === 'warning') icon = 'fa-exclamation-circle';
+
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar-penalty').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function applyPenalty(value, jenis) {
+            db.ref('seni_match/active_athlete').once('value', snap => {
+                const currentData = snap.val() || {};
+                let currentPenalty = currentData.penalty || 0;
+                let newPenalty = parseFloat((currentPenalty + value).toFixed(2));
+                db.ref('seni_match/active_athlete').update({ 
+                    penalty: newPenalty,
+                    last_penalty_reason: jenis 
+                }).then(() => {
+                    showToast(`Hukuman ${jenis} (-${value}) berhasil ditambahkan`, 'warning');
+                });
+            });
+        }
+
+        function resetPenaltyValue() {
+            db.ref('seni_match/active_athlete').update({ penalty: 0 }).then(() => {
+                showToast("Semua hukuman telah direset ke 0.00", "info");
+            });
+        }
+
+        function openWinnerModal() {
+            document.getElementById('pop-median-biru').innerText = matchScores.BIRU.median;
+            document.getElementById('pop-sd-biru').innerText = matchScores.BIRU.sd;
+            document.getElementById('pop-time-biru').innerText = matchScores.BIRU.time;
+            document.getElementById('pop-pen-biru').innerText = matchScores.BIRU.penalty;
+            document.getElementById('pop-total-biru').innerText = matchScores.BIRU.final_score;
+
+            document.getElementById('pop-median-merah').innerText = matchScores.MERAH.median;
+            document.getElementById('pop-sd-merah').innerText = matchScores.MERAH.sd;
+            document.getElementById('pop-time-merah').innerText = matchScores.MERAH.time;
+            document.getElementById('pop-pen-merah').innerText = matchScores.MERAH.penalty;
+            document.getElementById('pop-total-merah').innerText = matchScores.MERAH.final_score;
+
+            document.getElementById('winnerModal').style.display = 'flex';
+        }
+
+        function closeWinnerModal() {
+            document.getElementById('winnerModal').style.display = 'none';
+        }
+
+        function confirmFinalWinner() {
+    const winner = document.getElementById('finalWinnerSelect').value; // Ambil MERAH/BIRU
+    if(!winner) {
+        showToast("Silakan pilih sudut pemenang terlebih dahulu!", "error");
+        return;
+    }
+
+    // Update Firebase agar Scoreboard bisa membaca
+    db.ref('seni_match/system').update({ 
+        phase: 'FINISHED',
+        winner: winner, // Menyimpan 'MERAH' atau 'BIRU'
+        timestamp: firebase.database.ServerValue.TIMESTAMP 
+    }).then(() => {
+        showToast(`Pertandingan Selesai. Pemenang: SUDUT ${winner}`, "success");
+        closeWinnerModal();
+    });
+}
+
+        function calculateMedian(arr) {
+            if (arr.length === 0) return 0;
+            const sorted = [...arr].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 !== 0 
+                ? sorted[mid] 
+                : (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+
+        function calculateSD(scoresArray) {
+            const n = scoresArray.length;
+            if (n < 2) return 0;
+            const mean = scoresArray.reduce((a, b) => a + b) / n;
+            const variance = scoresArray.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+            return Math.sqrt(variance);
+        }
+
+        function updateFinalScore() {
+            db.ref('live_scores/seni').once('value', scoreSnap => {
+                db.ref('seni_match/active_athlete').once('value', athleteSnap => {
+                    const scores = scoreSnap.val() || {};
+                    const athleteData = athleteSnap.val() || {};
+                    const penalty = athleteData.penalty || 0;
+                    const sudut = athleteData.sudut || "BIRU";
+
+                    let validScores = [];
+                    for(let i=1; i<=currentJuryCount; i++) {
+                        const val = scores[`juri_seni_${i}`]?.total;
+                        const el = document.getElementById(`score-val-${i}`);
+                        if(el) {
+                            if(val !== undefined && val !== null) {
+                                const s = parseFloat(val);
+                                validScores.push(s);
+                                el.innerText = s.toFixed(2);
+                            } else {
+                                el.innerText = "0.00";
+                            }
+                        }
+                    }
+
+                    const median = calculateMedian(validScores);
+                    const finalTotal = median - penalty;
+                    const sdValue = calculateSD(validScores);
+                    const timeDisp = document.getElementById('stat-time').innerText;
+
+                    document.getElementById('stat-median').innerText = median.toFixed(3);
+                    document.getElementById('stat-penalty').innerText = penalty.toFixed(2);
+                    document.getElementById('stat-total').innerText = finalTotal.toFixed(3);
+                    document.getElementById('stat-sd').innerText = sdValue.toFixed(4);
+
+                    matchScores[sudut] = {
+                        sd: sdValue.toFixed(4),
+                        time: timeDisp,
+                        penalty: penalty.toFixed(2),
+                        median: median.toFixed(3),
+                        final_score: finalTotal.toFixed(3)
+                    };
+
+                    db.ref('seni_match/active_athlete').update({
+                        median_display: median.toFixed(3),
+                        final_score: finalTotal.toFixed(3),
+                        sd_score: sdValue.toFixed(4)
+                    });
+                });
+            });
+        }
+
+        db.ref('seni_match/config').on('value', snap => {
+            const config = snap.val();
+            if(config && config.juryCount) {
+                currentJuryCount = config.juryCount;
+                renderJuryCards();
+            }
+        });
+
+        function renderJuryCards() {
+            const container = document.getElementById('container-juri');
+            container.innerHTML = "";
+            for(let i=1; i<=currentJuryCount; i++) {
+                container.innerHTML += `
+                    <div id="card-juri-${i}" class="flex flex-col shadow-md w-32">
+                        <div class="juri-bar bar-theme text-[9px] border-b border-white/20 uppercase">Juri ${i}</div>
+                        <div id="score-val-${i}" class="juri-bar bar-theme text-3xl italic font-black">0.00</div>
+                    </div>
+                `;
+            }
+            db.ref('seni_match/active_athlete').once('value', snap => applyTheme(snap.val()));
+        }
+
+        db.ref('live_scores/seni').on('value', () => updateFinalScore());
+        db.ref('seni_match/active_athlete').on('value', snap => {
+            const data = snap.val();
+            applyTheme(data);
+            updateFinalScore();
+        });
+
+        function applyTheme(data) {
+            if(!data) return;
+            document.getElementById('disp-name').innerText = `| ${data.nama || "---"} |`;
+            document.getElementById('disp-team').innerText = "KONTINGEN " + (data.kontingen || "---");
+            document.getElementById('disp-kategori-umur').innerText = data.pool ? `Pool ${data.pool}` : "---";
+            document.getElementById('disp-babak').innerText = data.babak || "---";
+            document.getElementById('disp-kategori-seni').innerText = data.kategori || "---";
+            
+            const labelSudut = document.getElementById('label-sudut');
+            const bars = document.querySelectorAll('.bar-theme');
+            const totalScoreText = document.getElementById('stat-total');
+
+            labelSudut.innerText = data.sudut || "---";
+
+            if(data.sudut === "MERAH") {
+                labelSudut.className = "font-black text-lg uppercase tracking-tighter text-sudut-merah";
+                totalScoreText.className = "text-red-700 font-black";
+                bars.forEach(b => { 
+                    b.classList.remove('bg-sudut-biru'); 
+                    b.classList.add('bg-sudut-merah'); 
+                });
+            } else {
+                labelSudut.className = "font-black text-lg uppercase tracking-tighter text-sudut-biru";
+                totalScoreText.className = "text-blue-700 font-black";
+                bars.forEach(b => { 
+                    b.classList.remove('bg-sudut-merah'); 
+                    b.classList.add('bg-sudut-biru'); 
+                });
+            }
+        }
+
+        function startTimer() {
+            db.ref('seni_match/system').update({ running: true, phase: 'peragaan' }).then(() => {
+                showToast("Waktu Pertandingan Dimulai!", "info");
+            });
+            document.getElementById('btn-start').classList.add('hidden');
+            document.getElementById('btn-gerakan-selesai').classList.remove('hidden');
+            
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                let mins = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+                let secs = (timeElapsed % 60).toString().padStart(2, '0');
+                let display = `${mins}:${secs}`;
+                document.getElementById('stat-time').innerText = display;
+                db.ref('seni_match/timer').set(display);
+            }, 1000);
+        }
+
+        function handleGerakanSelesai() {
+            const btn = document.getElementById('btn-gerakan-selesai');
+            if (!isGerakanSelesai) {
+                db.ref('seni_match/system').update({ running: false, phase: 'penilaian_akhir' });
+                clearInterval(timerInterval);
+                isGerakanSelesai = true;
+                btn.innerHTML = `<i class="fas fa-save mr-1"></i> Selesai`;
+                btn.className = "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all";
+                showToast("Timer Berhenti. Menunggu Input Juri Selesai.", "warning");
+            } else {
+                saveToHistory(); 
+                btn.classList.add('hidden');
+                document.getElementById('post-match-controls').classList.remove('hidden');
+                showToast("Data Skor Berhasil Disimpan sementara.", "success");
+            }
+        }
+
+        function tampilkanSudutLawan() {
+            db.ref('seni_match/standby_data').once('value', snap => {
+                const standby = snap.val();
+                if(!standby) return;
+                db.ref('seni_match/active_athlete').once('value', activeSnap => {
+                    const active = activeSnap.val();
+                    const nextAthlete = active.sudut === "MERAH" ? standby.biru : standby.merah;
+                    const nextData = {
+                        ...nextAthlete,
+                        ...standby.common,
+                        penalty: 0,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    db.ref('seni_match/active_athlete').set(nextData).then(() => {
+                        db.ref('seni_match/status_juri').set(null);
+                        db.ref('live_scores/seni').set(null);
+                        db.ref('seni_match/system').update({ phase: 'waiting' });
+                        timeElapsed = 0;
+                        document.getElementById('stat-time').innerText = "00:00";
+                        document.getElementById('post-match-controls').classList.add('hidden');
+                        document.getElementById('btn-start').classList.remove('hidden');
+                        isGerakanSelesai = false;
+                        showToast(`Sudut Berpindah ke ${nextAthlete.sudut}`, "info");
+                    });
+                });
+            });
+        }
+
+        function saveToHistory() {
+            db.ref('seni_match/active_athlete').once('value', snap => {
+                const data = snap.val();
+                const historyData = {
+                    ...data,
+                    final_score: document.getElementById('stat-total').innerText,
+                    median_score: document.getElementById('stat-median').innerText,
+                    sd_score: document.getElementById('stat-sd').innerText,
+                    time_display: document.getElementById('stat-time').innerText,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+                db.ref('seni_match/history').push(historyData);
+            });
+        }
+
+        db.ref('seni_match/status_juri').on('value', snap => {
+            const status = snap.val() || {};
+            for(let i=1; i<=currentJuryCount; i++) {
+                const isReady = status[`juri_seni_${i}`]?.ready;
+                const card = document.getElementById(`card-juri-${i}`);
+                if(card) {
+                    const barElements = card.querySelectorAll('.bar-theme');
+                    if(isReady) barElements.forEach(el => el.classList.remove('not-ready'));
+                    else barElements.forEach(el => el.classList.add('not-ready'));
+                }
+            }
+        });
+
+        function resetJuriReady() {
+            db.ref('seni_match/status_juri').set(null);
+            db.ref('live_scores/seni').set(null);
+            db.ref('seni_match/active_athlete').update({ penalty: 0 });
+            db.ref('seni_match/system').update({ phase: 'waiting' });
+            timeElapsed = 0; 
+            isGerakanSelesai = false;
+            document.getElementById('stat-time').innerText = "00:00";
+            db.ref('seni_match/timer').set("00:00");
+            document.getElementById('btn-start').classList.remove('hidden');
+            document.getElementById('btn-gerakan-selesai').classList.add('hidden');
+            document.getElementById('post-match-controls').classList.add('hidden');
+            showToast("Sistem & Status Juri di-reset ulang", "error");
+        }
+
+        function konfirmasiSah() {
+    // Pastikan variabel totalNilai sudah didefinisikan sebelumnya
+    const pemenang = totalNilaiMerah > totalNilaiBiru ? 'merah' : 'biru';
+
+    db.ref('seni_match/system').update({
+        phase: 'FINISHED', // Gunakan huruf kecil sesuai pengecekan di scoreboard
+        winner: pemenang,  // 'merah' atau 'biru'
+        updatedAt: firebase.database.ServerValue.TIMESTAMP
+    }).then(() => {
+        showToast("Pemenang telah dikonfirmasi: " + pemenang.toUpperCase());
+    });
+}
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

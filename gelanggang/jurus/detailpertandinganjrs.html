@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard Result - Official Light</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        /* Kunci layar agar tidak bisa scroll */
+        html, body { 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+        }
+        
+        .popup-header { 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            padding: 0.5rem; 
+            text-transform: uppercase; 
+            font-size: 0.7rem; 
+            font-weight: 900; 
+            letter-spacing: 0.1em; 
+            border: 1px solid #e2e8f0; 
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: #ffffff; 
+            border-radius: 1.5rem; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        td { padding: 0.75rem 1.25rem; border: 1px solid #f1f5f9; text-align: center; }
+        .font-mono-score { font-family: ui-monospace, monospace; font-weight: 700; }
+        
+        /* Animasi Pop Winner */
+        @keyframes winner-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-winner {
+            animation: winner-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .glow-blue { box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); }
+        .glow-red { box-shadow: 0 0 30px rgba(220, 38, 38, 0.3); }
+
+        .tie-breaker-active { background-color: #fefce8 !important; }
+        .tie-breaker-active td { color: #854d0e !important; font-weight: 800; }
+
+        /* Efek Shimmer pada Banner */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .shimmer-effect {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <div class="w-full max-w-xl flex flex-col items-center">
+        <div id="winner-banner" class="mb-6 p-6 rounded-3xl text-center hidden uppercase font-black italic tracking-tighter text-4xl border-4 relative overflow-hidden w-full">
+            <div class="relative z-10">
+                <i class="fas fa-trophy mr-3"></i>
+                WINNER: <span id="winner-name">---</span>
+            </div>
+            <div class="shimmer-effect"></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" class="popup-header text-left pl-6">Detail Point</th>
+                    <th colspan="2" class="popup-header">Score Result</th>
+                </tr>
+                <tr>
+                    <th class="bg-blue-600 text-white py-2 text-[10px] uppercase font-black">Biru</th>
+                    <th class="bg-red-600 text-white py-2 text-[10px] uppercase font-black">Merah</th>
+                </tr>
+            </thead>
+            <tbody id="popup-body-results">
+                <tr>
+                    <td class="text-left pl-6 font-bold italic text-slate-500 bg-slate-50/50 text-sm">Median Juri</td>
+                    <td id="pop-median-biru" class="font-mono-score text-xl text-blue-600">0.00</td>
+                    <td id="pop-median-merah" class="font-mono-score text-xl text-red-600">0.00</td>
+                </tr>
+                <tr>
+                    <td class="text-left pl-6 font-bold text-slate-500 bg-slate-50/50 text-sm">Waktu</td>
+                    <td id="pop-time-biru" class="font-mono text-base text-slate-600">00:00</td>
+                    <td id="pop-time-merah" class="font-mono text-base text-slate-600">00:00</td>
+                </tr>
+                <tr>
+                    <td class="text-left pl-6 font-bold text-red-500 bg-slate-50/50 text-sm">Hukuman</td>
+                    <td id="pop-pen-biru" class="font-mono-score text-base text-red-500">0.00</td>
+                    <td id="pop-pen-merah" class="font-mono-score text-base text-red-500">0.00</td>
+                </tr>
+                <tr class="bg-slate-50 font-black">
+                    <td class="text-left pl-6 text-slate-800 uppercase italic text-sm">Total Score</td>
+                    <td id="pop-total-biru" class="text-4xl text-blue-700 font-black">0.00</td>
+                    <td id="pop-total-merah" class="text-4xl text-red-700 font-black">0.00</td>
+                </tr>
+                <tr id="row-sd">
+                    <td class="text-left pl-6 text-[10px] text-slate-400 uppercase bg-slate-50/30">Std. Deviasi</td>
+                    <td id="pop-sd-biru" class="text-[10px] font-mono text-slate-400">0.0000</td>
+                    <td id="pop-sd-merah" class="text-[10px] font-mono text-slate-400">0.0000</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentScores = { biru: null, merah: null };
+        let hasCelebrated = false;
+
+        db.ref('seni_match/history').limitToLast(2).on('value', snap => {
+            const history = snap.val();
+            if(!history) return;
+
+            Object.values(history).forEach(match => {
+                const sdt = match.sudut.toLowerCase();
+                currentScores[sdt] = match;
+                document.getElementById(`pop-median-${sdt}`).innerText = match.median_score || "0.00";
+                document.getElementById(`pop-time-${sdt}`).innerText = match.time_display || "00:00";
+                document.getElementById(`pop-pen-${sdt}`).innerText = match.penalty || "0.00";
+                document.getElementById(`pop-total-${sdt}`).innerText = match.final_score || "0.00";
+                document.getElementById(`pop-sd-${sdt}`).innerText = match.sd_score || "0.0000";
+            });
+
+            processWinnerLogic();
+        });
+
+        function fireConfetti(colorHex) {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: [colorHex, '#ffffff', '#ffd700']
+            });
+        }
+
+        function processWinnerLogic() {
+            if (!currentScores.biru || !currentScores.merah) return;
+
+            const totalBiru = parseFloat(currentScores.biru.final_score);
+            const totalMerah = parseFloat(currentScores.merah.final_score);
+            const sdBiru = parseFloat(currentScores.biru.sd_score);
+            const sdMerah = parseFloat(currentScores.merah.sd_score);
+
+            let winner = "";
+            let isTie = false;
+
+            if (totalBiru > totalMerah) winner = "BIRU";
+            else if (totalMerah > totalBiru) winner = "MERAH";
+            else {
+                isTie = true;
+                if (sdBiru < sdMerah) winner = "BIRU";
+                else if (sdMerah < sdBiru) winner = "MERAH";
+                else winner = "DRAW";
+            }
+            
+            if (winner !== "" && !hasCelebrated) {
+                displayWinner(winner, isTie);
+                hasCelebrated = true;
+            }
+        }
+
+        function displayWinner(winner, isTie) {
+            const banner = document.getElementById('winner-banner');
+            const winnerName = document.getElementById('winner-name');
+            const sdRow = document.getElementById('row-sd');
+
+            banner.classList.remove('hidden');
+            winnerName.innerText = winner;
+            sdRow.classList.toggle('tie-breaker-active', isTie);
+
+            if (winner === 'BIRU') {
+                banner.className = "mb-6 p-6 rounded-3xl text-center uppercase font-black italic tracking-tighter text-4xl border-4 border-blue-600 bg-white text-blue-600 shadow-xl animate-winner glow-blue w-full";
+                fireConfetti('#2563eb');
+            } else if (winner === 'MERAH') {
+                banner.className = "mb-6 p-6 rounded-3xl text-center uppercase font-black italic tracking-tighter text-4xl border-4 border-red-600 bg-white text-red-600 shadow-xl animate-winner glow-red w-full";
+                fireConfetti('#dc2626');
+            }
+        }
+
+        db.ref('seni_match/system').on('value', snap => {
+            const system = snap.val();
+            if(!system || system.phase === 'waiting') {
+                document.getElementById('winner-banner').classList.add('hidden');
+                document.getElementById('row-sd').classList.remove('tie-breaker-active');
+                currentScores = { biru: null, merah: null };
+                hasCelebrated = false;
+            }
+        });
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

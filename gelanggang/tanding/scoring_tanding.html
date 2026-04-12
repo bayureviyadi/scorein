@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoring Tanding — TMS Silat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red:        #c0392b;
+            --red-bright: #e74c3c;
+            --gold:       #c9a84c;
+            --blue:       #3b82f6;
+            --amber:      #f59e0b;
+            --emerald:    #10b981;
+            --ink:        #0e0e0e;
+            --ink-mid:    #161616;
+            --ink-soft:   #1f1f1f;
+            --ink-card:   #131313;
+            --text:       #f0ede8;
+            --text-muted: #7a7670;
+            --text-faint: #2e2c2a;
+            --border:     rgba(255,255,255,0.07);
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-serif:   'DM Serif Display', serif;
+            --font-body:    'DM Sans', sans-serif;
+        }
+
+        html { background: var(--ink); }
+        body {
+            background: var(--ink);
+            color: var(--text);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::selection { background: var(--red); color: #fff; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--ink); }
+        ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+        /* ── BG ── */
+        .bg-grid {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(0deg,  rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 72px 72px;
+            pointer-events: none; z-index: 0;
+        }
+        .bg-glow {
+            position: fixed;
+            top: -200px; left: 50%;
+            transform: translateX(-50%);
+            width: 900px; height: 500px;
+            background: radial-gradient(ellipse, rgba(192,57,43,0.07) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ── LAYOUT ── */
+        .page {
+            position: relative; z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.75rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3.5rem;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 1.5rem; }
+        .topbar-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-wordmark { font-family: var(--font-display); font-size: 20px; letter-spacing: 3px; color: var(--text); }
+        .logo-badge {
+            width: 30px; height: 30px;
+            background: var(--red);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-size: 12px; color: #fff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        .breadcrumb {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint);
+        }
+        .breadcrumb span { color: var(--red); }
+        .breadcrumb-sep { font-size: 9px; color: var(--text-faint); }
+
+        .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+        .btn-icon {
+            width: 40px; height: 40px;
+            border: 1px solid var(--border); background: transparent;
+            color: var(--text-muted); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-back {
+            display: flex; align-items: center; gap: 8px;
+            padding: 0 16px; height: 40px;
+            border: 1px solid var(--border); background: transparent;
+            color: var(--text-muted); font-size: 11px; font-weight: 500;
+            letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .btn-back:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-logout {
+            display: flex; align-items: center; gap: 8px;
+            padding: 0 16px; height: 40px;
+            border: 1px solid rgba(192,57,43,0.35); background: rgba(192,57,43,0.08);
+            color: var(--red); font-size: 11px; font-weight: 500;
+            letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-logout:hover { background: rgba(192,57,43,0.18); border-color: var(--red); }
+
+        /* ── HEADER ── */
+        .page-header {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            flex-wrap: wrap; gap: 1.5rem; margin-bottom: 3rem;
+        }
+        .header-eyebrow {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--red); margin-bottom: 0.75rem;
+        }
+        .header-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--red); }
+        .header-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            letter-spacing: 2px; text-transform: uppercase;
+            line-height: 0.93; color: var(--text);
+        }
+        .header-title em { font-family: var(--font-serif); font-style: italic; color: var(--gold); }
+
+        /* ── MATCH STATUS STRIP ── */
+        .status-strip {
+            display: flex; align-items: center; gap: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--ink-mid);
+            border: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
+        }
+        .status-live {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+            color: #34c38f; border: 1px solid rgba(52,195,143,0.25);
+            padding: 4px 12px; background: rgba(52,195,143,0.06);
+            margin-left: auto;
+        }
+        .live-dot {
+            width: 6px; height: 6px; background: #34c38f;
+            border-radius: 50%; animation: live-pulse 1.5s infinite;
+        }
+        @keyframes live-pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+        /* ── SECTION LABEL ── */
+        .section-label {
+            font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--text-faint); margin-bottom: 1.25rem;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* ── MAIN GRID ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 1px;
+        }
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+
+        /* ── CARD BASE ── */
+        .menu-card {
+            background: var(--ink);
+            cursor: pointer;
+            position: relative; overflow: hidden;
+            padding: 2.25rem 2rem;
+            display: flex; flex-direction: column;
+            text-decoration: none; color: inherit;
+            transition: background 0.25s;
+            min-height: 220px;
+        }
+        .menu-card:hover { background: var(--ink-soft); }
+
+        /* accent top line */
+        .card-accent {
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 2px; transform: scaleX(0); transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .menu-card:hover .card-accent { transform: scaleX(1); }
+
+        /* corner tri */
+        .card-corner {
+            position: absolute; bottom: 0; right: 0;
+            width: 0; height: 0;
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .menu-card:hover .card-corner { opacity: 1; }
+
+        /* deco watermark text */
+        .card-deco {
+            position: absolute; bottom: -12px; right: -4px;
+            font-family: var(--font-display);
+            font-size: 100px; line-height: 1;
+            color: rgba(255,255,255,0.025);
+            pointer-events: none; user-select: none;
+            transition: color 0.25s;
+        }
+        .menu-card:hover .card-deco { color: rgba(255,255,255,0.04); }
+
+        /* icon */
+        .card-icon {
+            width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; margin-bottom: 1.5rem;
+            position: relative; transition: transform 0.3s;
+        }
+        .card-icon::before {
+            content: ''; position: absolute; inset: 0;
+            opacity: 0.15;
+        }
+        .card-icon i { position: relative; z-index: 1; }
+        .menu-card:hover .card-icon { transform: scale(1.1); }
+
+        /* badge */
+        .card-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+            padding: 3px 10px; border: 1px solid;
+            margin-bottom: 0.75rem; width: fit-content;
+        }
+
+        /* text */
+        .card-name {
+            font-family: var(--font-display);
+            font-size: 1.9rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--text); line-height: 1; margin-bottom: 0.6rem;
+        }
+        .card-desc {
+            font-size: 12px; font-weight: 300;
+            color: var(--text-muted); line-height: 1.6; flex: 1;
+        }
+        .card-cta {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+            margin-top: 1.5rem; opacity: 0; transform: translateX(-8px);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .menu-card:hover .card-cta { opacity: 1; transform: translateX(0); }
+        .cta-line { width: 24px; height: 1px; }
+
+        /* ── COLOR THEMES ── */
+        /* control / amber */
+        .theme-amber .card-accent    { background: var(--amber); }
+        .theme-amber .card-icon      { color: var(--amber); }
+        .theme-amber .card-icon::before { background: var(--amber); }
+        .theme-amber .card-badge     { color: var(--amber); border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.08); }
+        .theme-amber .card-cta       { color: var(--amber); }
+        .theme-amber .cta-line       { background: var(--amber); }
+        .theme-amber .card-corner    { border-right: 34px solid rgba(245,158,11,0.2); border-top: 34px solid transparent; }
+
+        /* admin / blue */
+        .theme-blue .card-accent    { background: var(--blue); }
+        .theme-blue .card-icon      { color: var(--blue); }
+        .theme-blue .card-icon::before { background: var(--blue); }
+        .theme-blue .card-badge     { color: var(--blue); border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.08); }
+        .theme-blue .card-cta       { color: var(--blue); }
+        .theme-blue .cta-line       { background: var(--blue); }
+        .theme-blue .card-corner    { border-right: 34px solid rgba(59,130,246,0.2); border-top: 34px solid transparent; }
+
+        /* scoreboard / emerald */
+        .theme-emerald .card-accent    { background: var(--emerald); }
+        .theme-emerald .card-icon      { color: var(--emerald); }
+        .theme-emerald .card-icon::before { background: var(--emerald); }
+        .theme-emerald .card-badge     { color: var(--emerald); border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); }
+        .theme-emerald .card-cta       { color: var(--emerald); }
+        .theme-emerald .cta-line       { background: var(--emerald); }
+        .theme-emerald .card-corner    { border-right: 34px solid rgba(16,185,129,0.2); border-top: 34px solid transparent; }
+
+        /* ── JURI SECTION ── */
+        .juri-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-top: none;
+        }
+        @media (max-width: 768px) { .juri-grid { grid-template-columns: 1fr; } }
+
+        .juri-card {
+            background: var(--ink-card);
+            cursor: pointer; position: relative; overflow: hidden;
+            padding: 1.75rem 2rem;
+            display: flex; align-items: center;
+            gap: 1.5rem;
+            text-decoration: none; color: inherit;
+            transition: background 0.25s;
+        }
+        .juri-card:hover { background: var(--ink-soft); }
+        .juri-card .card-accent { position: absolute; top: 0; left: 0; right: 0; height: 1px; transform: scaleX(0); transform-origin: left; transition: transform 0.3s; background: var(--red); }
+        .juri-card:hover .card-accent { transform: scaleX(1); }
+
+        .juri-num {
+            font-family: var(--font-display);
+            font-size: 3.5rem; letter-spacing: 0;
+            color: var(--text-faint); line-height: 1;
+            flex-shrink: 0; transition: color 0.25s;
+        }
+        .juri-card:hover .juri-num { color: var(--red); }
+
+        .juri-info
+        .juri-role {
+            font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--text-faint); margin-bottom: 4px;
+        }
+        .juri-name {
+            font-family: var(--font-display);
+            font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--text); line-height: 1;
+        }
+        .juri-badge {
+            margin-left: auto; flex-shrink: 0;
+            display: flex; align-items: center; gap: 5px;
+            font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+            padding: 3px 10px; border: 1px solid rgba(192,57,43,0.35);
+            background: rgba(192,57,43,0.08); color: var(--red);
+            opacity: 0; transform: translateX(8px);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .juri-card:hover .juri-badge { opacity: 1; transform: translateX(0); }
+
+        /* ── LOGOUT MODAL ── */
+        .modal-bg {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.85);
+            display: none; align-items: center; justify-content: center; padding: 1.5rem;
+        }
+        .modal-bg.open { display: flex; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box { background: var(--ink-mid); border: 1px solid var(--border); width: 100%; max-width: 380px; overflow: hidden; }
+        .modal-top { height: 2px; background: var(--red); }
+        .modal-body { padding: 2.5rem; }
+        .modal-title { font-family: var(--font-display); font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text); margin-bottom: 0.5rem; }
+        .modal-sub { font-size: 13px; font-weight: 300; color: var(--text-muted); margin-bottom: 2rem; }
+        .modal-actions { display: flex; gap: 0.75rem; }
+        .btn-cancel { flex: 1; padding: 12px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .btn-cancel:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-confirm { flex: 1; padding: 12px; background: var(--red); border: none; color: #fff; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+        .btn-confirm:hover { background: var(--red-bright); }
+
+        /* ── REVEAL ── */
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .d1 { transition-delay: 0.05s; } .d2 { transition-delay: 0.1s; }
+        .d3 { transition-delay: 0.15s; } .d4 { transition-delay: 0.2s; }
+
+        /* ── FOOTER ── */
+        .page-footer {
+            margin-top: 3.5rem; padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+        }
+        .page-footer p { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-faint); }
+        .page-footer span { color: var(--red); }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="page">
+
+    <!-- TOPBAR -->
+    <div class="topbar reveal">
+        <div class="topbar-left">
+            <a href="../../index.html" class="topbar-logo">
+                <span class="logo-wordmark">SCORE</span>
+                <div class="logo-badge">IN</div>
+            </a>
+            <div class="breadcrumb">
+                Operator <span class="breadcrumb-sep">›</span>
+                <span>Tanding</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <a href="../kategori.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Kategori
+            </a>
+            <button class="btn-icon" onclick="toggleTheme()" title="Toggle tema">
+                <i class="fas fa-circle-half-stroke" id="theme-icon"></i>
+            </button>
+            <button class="btn-logout" onclick="openModal()">
+                <i class="fas fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="reveal d1">
+            <div class="header-eyebrow">Kategori Tanding</div>
+            <h1 class="header-title">Scoring<br><em>Tanding</em></h1>
+        </div>
+    </div>
+
+    <!-- STATUS STRIP -->
+    <div class="status-strip reveal d2">
+        <div class="status-item">
+            <i class="fas fa-location-dot" style="color:var(--red); font-size:11px;"></i>
+            Gelanggang Aktif
+        </div>
+        <div class="status-item">
+            <i class="fas fa-network-wired" style="color:var(--text-faint); font-size:11px;"></i>
+            Realtime
+        </div>
+        <div class="status-item">
+            <i class="fas fa-shield-halved" style="color:var(--text-faint); font-size:11px;"></i>
+            Session Secured
+        </div>
+        <div class="status-live">
+            <div class="live-dot"></div>
+            Live
+        </div>
+    </div>
+
+    <!-- MAIN CARDS -->
+    <div class="section-label reveal d2">Panel Utama</div>
+    <div class="main-grid reveal d3">
+
+        <!-- DEWAN MATCH -->
+        <a href="dewan.html" class="menu-card theme-amber">
+            <div class="card-accent"></div>
+            <div class="card-corner"></div>
+            <div class="card-deco">D</div>
+            <div class="card-icon">
+                <i class="fas fa-gavel"></i>
+            </div>
+            <div class="card-badge">
+                <i class="fas fa-circle" style="font-size:6px;"></i> Control
+            </div>
+            <h3 class="card-name">Dewan Match</h3>
+            <p class="card-desc">Panel kontrol utama pertandingan, timer, dan pengelolaan sesi tanding.</p>
+            <div class="card-cta">
+                <div class="cta-line"></div>
+                Buka Panel
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </a>
+
+        <!-- OPERATOR IT -->
+        <a href="operator.html" class="menu-card theme-blue">
+            <div class="card-accent"></div>
+            <div class="card-corner"></div>
+            <div class="card-deco">O</div>
+            <div class="card-icon">
+                <i class="fas fa-desktop"></i>
+            </div>
+            <div class="card-badge">
+                <i class="fas fa-circle" style="font-size:6px;"></i> Admin
+            </div>
+            <h3 class="card-name">Operator IT</h3>
+            <p class="card-desc">Panel administrasi teknis, konfigurasi sistem, dan pengaturan data pertandingan.</p>
+            <div class="card-cta">
+                <div class="cta-line"></div>
+                Buka Panel
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </a>
+
+        <!-- SCOREBOARD -->
+        <a href="scoreboard.html" class="menu-card theme-emerald">
+            <div class="card-accent"></div>
+            <div class="card-corner"></div>
+            <div class="card-deco">S</div>
+            <div class="card-icon">
+                <i class="fas fa-tv"></i>
+            </div>
+            <div class="card-badge">
+                <i class="fas fa-circle" style="font-size:6px;"></i> View
+            </div>
+            <h3 class="card-name">Scoreboard</h3>
+            <p class="card-desc">Tampilan skor publik untuk layar proyektor dan display arena pertandingan.</p>
+            <div class="card-cta">
+                <div class="cta-line"></div>
+                Buka Tampilan
+                <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- JURI SECTION -->
+    <div class="section-label reveal d3" style="margin-top: 2.5rem;">Panel Juri</div>
+    <div class="juri-grid reveal d4">
+
+        <a href="wasit.html?id=1" class="juri-card">
+            <div class="card-accent"></div>
+            <div class="juri-num">01</div>
+            <div class="juri-info">
+                <p class="juri-role">Judge / Wasit</p>
+                <h4 class="juri-name">Juri 1</h4>
+            </div>
+            <div class="juri-badge">
+                <i class="fas fa-arrow-right" style="font-size:8px;"></i> Masuk
+            </div>
+        </a>
+
+        <a href="wasit.html?id=2" class="juri-card">
+            <div class="card-accent"></div>
+            <div class="juri-num">02</div>
+            <div class="juri-info">
+                <p class="juri-role">Judge / Wasit</p>
+                <h4 class="juri-name">Juri 2</h4>
+            </div>
+            <div class="juri-badge">
+                <i class="fas fa-arrow-right" style="font-size:8px;"></i> Masuk
+            </div>
+        </a>
+
+        <a href="wasit.html?id=3" class="juri-card">
+            <div class="card-accent"></div>
+            <div class="juri-num">03</div>
+            <div class="juri-info">
+                <p class="juri-role">Judge / Wasit</p>
+                <h4 class="juri-name">Juri 3</h4>
+            </div>
+            <div class="juri-badge">
+                <i class="fas fa-arrow-right" style="font-size:8px;"></i> Masuk
+            </div>
+        </a>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="page-footer reveal">
+        <p>Tournament Management System · <span>TMS Silat</span> © 2026</p>
+        <p><span>Scoring</span> · Tanding</p>
+    </div>
+
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="modal-bg" id="logoutModal">
+    <div class="modal-box">
+        <div class="modal-top"></div>
+        <div class="modal-body">
+            <h3 class="modal-title">Keluar?</h3>
+            <p class="modal-sub">Sesi akan diakhiri dan sistem akan dikunci.</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Batal</button>
+                <button class="btn-confirm" onclick="confirmLogout()">
+                    <i class="fas fa-right-from-bracket"></i> Ya, Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="../../assets/js/auth-check.js"></script>
+
+<script>
+    // ── THEME ──
+    let isDark = true;
+    if (localStorage.getItem('theme') === 'light') {
+        isDark = false; applyTheme();
+    }
+    function toggleTheme() { isDark = !isDark; applyTheme(); }
+    function applyTheme() {
+        const r = document.documentElement;
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        document.getElementById('theme-icon').className = isDark ? 'fas fa-circle-half-stroke' : 'fas fa-moon';
+        if (!isDark) {
+            r.style.setProperty('--ink',        '#f5f4f0');
+            r.style.setProperty('--ink-mid',    '#eeece8');
+            r.style.setProperty('--ink-soft',   '#e5e3de');
+            r.style.setProperty('--ink-card',   '#f0ede8');
+            r.style.setProperty('--text',       '#1a1a1a');
+            r.style.setProperty('--text-muted', '#6b6760');
+            r.style.setProperty('--text-faint', '#c0bdb8');
+            r.style.setProperty('--border',     'rgba(0,0,0,0.09)');
+        } else {
+            r.style.setProperty('--ink',        '#0e0e0e');
+            r.style.setProperty('--ink-mid',    '#161616');
+            r.style.setProperty('--ink-soft',   '#1f1f1f');
+            r.style.setProperty('--ink-card',   '#131313');
+            r.style.setProperty('--text',       '#f0ede8');
+            r.style.setProperty('--text-muted', '#7a7670');
+            r.style.setProperty('--text-faint', '#2e2c2a');
+            r.style.setProperty('--border',     'rgba(255,255,255,0.07)');
+        }
+    }
+
+    // ── MODAL ──
+    function openModal()  { document.getElementById('logoutModal').classList.add('open'); }
+    function closeModal() { document.getElementById('logoutModal').classList.remove('open'); }
+    document.getElementById('logoutModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('logoutModal')) closeModal();
+    });
+    function confirmLogout() {
+        sessionStorage.removeItem('isAuthorized');
+        window.location.href = '../../auth/login.html?role=operator';
+    }
+
+    // ── REVEAL ──
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // ── SECURITY ──
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73,74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault(); return false;
+        }
+    });
+</script>
+</body>
+</html>

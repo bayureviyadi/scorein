@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Scoreboard</title>
+    <link rel="stylesheet" href="../../assets/css/gelanggang/tanding/scoreboard.css">
+    </head>
+<body id="mainBody">
+
+<div id="modeSwitcher">
+    <button class="mode-btn" onclick="setMode('default')">PRO</button>
+    <button class="mode-btn" onclick="setMode('terang')">TERANG</button>
+    <button class="mode-btn" onclick="setMode('sporty')">SPORTY</button>
+    <button class="mode-btn toggle-timer" onclick="toggleTimer()">TIMER ON/OFF</button>
+</div>
+
+<div class="header-top">
+    <div class="event-badge"><h1 id="dispEvent">NAMA EVENT</h1></div>
+</div>
+
+<div class="info-bar">
+    <div id="dispBabak" style="font-weight: 900; color: var(--text-gold); text-transform: uppercase;">PENYISIHAN</div>
+    <div>KELAS <span id="dispKelas">...</span> • PARTAI <span id="dispPartai">0</span></div>
+</div>
+
+<div class="sub-header">
+    <div class="atlet-box blue">
+        <div class="name-label" id="dispNamaBiru">BIRU</div>
+        <div class="team-label" id="dispKontingenBiru">KONTINGEN BIRU</div>
+    </div>
+    <div class="timer-center">
+        <div class="timer-val" id="timerDisplay">02:00</div>
+    </div>
+    <div class="atlet-box red">
+        <div class="name-label" id="dispNamaMerah">MERAH</div>
+        <div class="team-label" id="dispKontingenMerah">KONTINGEN MERAH</div>
+    </div>
+</div>
+
+<div class="scoreboard">
+    <div class="penalty-side">
+        <div id="Biru-BN1" class="p-box">BN 1</div>
+        <div id="Biru-BN2" class="p-box">BN 2</div>
+        <div id="Biru-T1" class="p-box">TEGUR 1</div>
+        <div id="Biru-T2" class="p-box">TEGUR 2</div>
+        <div id="Biru-P1" class="p-box">P 1</div>
+        <div id="Biru-P2" class="p-box">P 2</div>
+    </div>
+    
+    <div class="score-box" id="scoreBiru">0</div>
+    
+    <div class="round-col">
+        <div class="rd-item" id="rb3">III</div>
+        <div class="rd-item" id="rb2">II</div>
+        <div class="rd-item" id="rb1">I</div>
+    </div>
+    
+    <div class="score-box" id="scoreMerah">0</div>
+    
+    <div class="penalty-side">
+        <div id="Merah-BN1" class="p-box">BN 1</div>
+        <div id="Merah-BN2" class="p-box">BN 2</div>
+        <div id="Merah-T1" class="p-box">TEGUR 1</div>
+        <div id="Merah-T2" class="p-box">TEGUR 2</div>
+        <div id="Merah-P1" class="p-box">P 1</div>
+        <div id="Merah-P2" class="p-box">P 2</div>
+    </div>
+</div>
+
+<div class="juri-bar">
+    <div class="juri-grid">
+        <div id="box-Biru-pukul-1" class="juri-box">J1 P</div>
+        <div id="box-Biru-pukul-2" class="juri-box">J2 P</div>
+        <div id="box-Biru-pukul-3" class="juri-box">J3 P</div>
+        <div id="box-Biru-tendang-1" class="juri-box">J1 T</div>
+        <div id="box-Biru-tendang-2" class="juri-box">J2 T</div>
+        <div id="box-Biru-tendang-3" class="juri-box">J3 T</div>
+    </div>
+    <div class="juri-grid">
+        <div id="box-Merah-pukul-1" class="juri-box">J1 P</div>
+        <div id="box-Merah-pukul-2" class="juri-box">J2 P</div>
+        <div id="box-Merah-pukul-3" class="juri-box">J3 P</div>
+        <div id="box-Merah-tendang-1" class="juri-box">J1 T</div>
+        <div id="box-Merah-tendang-2" class="juri-box">J2 T</div>
+        <div id="box-Merah-tendang-3" class="juri-box">J3 T</div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script src="../../assets/js/auth-check.js"></script>
+<script src="../../assets/js/gelanggang/tanding/script-scoreboardtd.js"></script>
+</body>
+</html>

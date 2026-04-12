@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dewan Match Control</title>
+    <!-- My Style -->
+        <link rel="stylesheet" href="../../assets/css/gelanggang/tanding/dewan.css">
+    <!-- My Style End -->
+</head>
+<body data-theme="standard">
+
+<div class="top-info">
+    <div class="athlete-info">
+        <span class="athlete-team" id="teamBiru">SUDUT BIRU</span>
+        <span class="athlete-name" id="nameBiru">PESILAT BIRU</span>
+    </div>
+    <div class="timer-container">
+        <div class="match-meta">
+            <div class="partai-badge" id="partaiDisp">PARTAI -</div>
+            <div class="class-info"><span id="kategoriDisp">KATEGORI</span> • <span id="kelasDisp">KELAS</span></div>
+        </div>
+        <div class="timer-main" id="timerDisp">02:00</div>
+    </div>
+    <div class="athlete-info" style="text-align: right;">
+        <span class="athlete-team" id="teamMerah">SUDUT MERAH</span>
+        <span class="athlete-name" id="nameMerah">PESILAT MERAH</span>
+    </div>
+</div>
+
+<div class="match-layout">
+    <div class="side-control">
+        <button class="btn-action btn-j span-full" onclick="inputDewan('Biru','Jatuhan',3)">JATUHAN +3</button>
+        <button id="btn-Biru-BN1" class="btn-action span-half" onclick="inputDewan('Biru','BN1',0)">BN 1</button>
+        <button id="btn-Biru-BN2" class="btn-action span-half" onclick="inputDewan('Biru','BN2',0)">BN 2</button>
+        <button class="btn-action span-half" style="color:#f59e0b" onclick="inputDewan('Biru','T1',-1)">T 1</button>
+        <button class="btn-action span-half" style="color:#f59e0b" onclick="inputDewan('Biru','T2',-2)">T 2</button>
+        <button class="btn-action btn-p span-third" onclick="inputDewan('Biru','P1',-5)">P1</button>
+        <button class="btn-action btn-p span-third" onclick="inputDewan('Biru','P2',-10)">P2</button>
+        <button class="btn-action btn-p3 span-third" onclick="inputDewan('Biru','P3',-15)">P3</button>
+        <button class="btn-action btn-undo span-full" onclick="hapusTerakhir('Biru')">UNDO BLUE</button>
+    </div>
+
+    <div class="score-box blue-score"><div class="score-val" id="scoreBiru">0</div></div>
+
+    <div class="round-container">
+        <div class="round-bar" id="rb3">III</div>
+        <div class="round-bar" id="rb2">II</div>
+        <div class="round-bar active" id="rb1">I</div>
+        <button class="btn-mode-cycle" onclick="cycleTheme()">MODE</button>
+    </div>
+
+    <div class="score-box red-score"><div class="score-val" id="scoreMerah">0</div></div>
+
+    <div class="side-control">
+        <button class="btn-action btn-j span-full" onclick="inputDewan('Merah','Jatuhan',3)">JATUHAN +3</button>
+        <button id="btn-Merah-BN1" class="btn-action span-half" onclick="inputDewan('Merah','BN1',0)">BN 1</button>
+        <button id="btn-Merah-BN2" class="btn-action span-half" onclick="inputDewan('Merah','BN2',0)">BN 2</button>
+        <button class="btn-action span-half" style="color:#f59e0b" onclick="inputDewan('Merah','T1',-1)">T 1</button>
+        <button class="btn-action span-half" style="color:#f59e0b" onclick="inputDewan('Merah','T2',-2)">T 2</button>
+        <button class="btn-action btn-p span-third" onclick="inputDewan('Merah','P1',-5)">P1</button>
+        <button class="btn-action btn-p span-third" onclick="inputDewan('Merah','P2',-10)">P2</button>
+        <button class="btn-action btn-p3 span-third" onclick="inputDewan('Merah','P3',-15)">P3</button>
+        <button class="btn-action btn-undo span-full" onclick="hapusTerakhir('Merah')">UNDO RED</button>
+    </div>
+</div>
+
+<div class="bottom-container">
+    <div class="juri-status-bar">
+        <div class="juri-grid" id="gridBiru"></div>
+        <div class="juri-grid" id="gridMerah"></div>
+    </div>
+    <table class="footer-stats">
+        <thead>
+            <tr>
+                <th>SUDUT</th><th>BN1</th><th>BN2</th><th>T1</th><th>T2</th><th>P1</th><th>P2</th><th>P3</th><th>JTN</th><th>TDN</th><th>PKL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="row-Biru"><td>BIRU</td><td id="stat-Biru-BN1">0</td><td id="stat-Biru-BN2">0</td><td id="stat-Biru-T1">0</td><td id="stat-Biru-T2">0</td><td id="stat-Biru-P1">0</td><td id="stat-Biru-P2">0</td><td id="stat-Biru-P3">0</td><td id="stat-Biru-Jatuhan">0</td><td id="stat-Biru-tendang">0</td><td id="stat-Biru-pukul">0</td></tr>
+            <tr id="row-Merah"><td>MERAH</td><td id="stat-Merah-BN1">0</td><td id="stat-Merah-BN2">0</td><td id="stat-Merah-T1">0</td><td id="stat-Merah-T2">0</td><td id="stat-Merah-P1">0</td><td id="stat-Merah-P2">0</td><td id="stat-Merah-P3">0</td><td id="stat-Merah-Jatuhan">0</td><td id="stat-Merah-tendang">0</td><td id="stat-Merah-pukul">0</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script src="../../assets/js/auth-check.js"></script>
+<script src="../../assets/js/gelanggang/tanding/script-dewantd.js"></script>
+</body>
+</html>

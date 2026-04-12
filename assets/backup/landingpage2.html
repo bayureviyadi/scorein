@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Silat - Digital Scoring System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        primary: '#800',
+                        graphite: {
+                            800: '#1c1c1c',
+                            900: '#121212',
+                            950: '#0a0a0a'
+                        }
+                    } 
+                } 
+            }
+        }
+    </script>
+    <style>
+        .banner-slide { display: none; }
+        .banner-slide.active { display: block; animation: fadeIn 0.8s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .glass-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        
+        .arrow-guide { animation: bounceCustom 1s infinite; }
+        @keyframes bounceCustom {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900 dark:bg-graphite-950 dark:text-gray-100 transition-colors duration-300">
+
+    <nav class="fixed w-full z-50 bg-white/70 dark:bg-graphite-950/70 glass-nav border-b border-slate-200 dark:border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl font-black tracking-tighter uppercase">SCORE</span>
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">IN</div>
+                </div>
+                
+                <div class="hidden md:flex items-center gap-6">
+                    <div class="flex gap-4 text-sm font-bold uppercase tracking-wider">
+                        <a href="#hero" class="hover:text-primary transition">Beranda</a>
+                        <a href="#tutorial" class="hover:text-primary transition">Tutorial</a>
+                        <a href="#event" class="hover:text-primary transition">Event</a>
+                    </div>
+                    <div class="h-6 w-[1px] bg-slate-200 dark:bg-white/10 mx-2"></div>
+                    <button onclick="toggleDarkMode()" class="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition">
+                        <i id="theme-icon" class="fas fa-moon"></i>
+                    </button>
+                    <div class="relative">
+                        <button onclick="toggleRoleMenu('role-menu', 'roleButton')" id="roleButton" class="role-btn-trigger w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition relative">
+                            <i class="fas fa-user"></i>
+                            <div id="guideArrow" class="hidden absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                                <i class="fas fa-caret-up text-primary text-2xl arrow-guide"></i>
+                                <span class="bg-primary text-white text-[10px] px-2 py-1 rounded font-bold whitespace-nowrap">PILIH ROLE</span>
+                            </div>
+                        </button>
+                        <div id="role-menu" class="role-menu-dropdown absolute right-0 mt-4 w-52 bg-white dark:bg-graphite-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl hidden overflow-hidden transition-all">
+                            <div class="p-2 space-y-1">
+                                <a href="auth/login.html?role=admin" class="flex items-center gap-3 px-4 py-3 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition text-slate-900 dark:text-gray-100">
+                                    <i class="fas fa-user-shield text-blue-500"></i> Admin
+                                </a>
+                                <a href="auth/login.html?role=operator" class="flex items-center gap-3 px-4 py-3 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition text-slate-900 dark:text-gray-100">
+                                    <i class="fas fa-desktop text-emerald-500"></i> Operator
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="toggleMobileMenu()" class="md:hidden text-2xl p-2 relative">
+                    <i class="fas fa-bars"></i>
+                    <div id="mobileGuideArrow" class="hidden absolute -bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                        <i class="fas fa-caret-up text-primary text-xl arrow-guide"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-graphite-900 border-b border-slate-200 dark:border-white/10 px-4 py-6 space-y-4">
+            <a href="#hero" onclick="toggleMobileMenu()" class="block text-lg font-bold">Beranda</a>
+            <a href="#tutorial" onclick="toggleMobileMenu()" class="block text-lg font-bold">Tutorial</a>
+            <a href="#event" onclick="toggleMobileMenu()" class="block text-lg font-bold">Event</a>
+            <hr class="border-slate-200 dark:border-white/10">
+            <div class="flex justify-between items-center">
+                <button onclick="toggleDarkMode()" class="flex items-center gap-2 font-bold uppercase text-sm">
+                    <i class="fas fa-circle-half-stroke"></i> Tema
+                </button>
+                
+                <div class="relative">
+                    <button onclick="toggleRoleMenu('mobile-role-menu', 'mobileRoleButton')" id="mobileRoleButton" class="role-btn-trigger w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center transition relative shadow-lg shadow-blue-500/30">
+                        <i class="fas fa-user"></i>
+                        <div id="innerMobileGuide" class="hidden absolute -bottom-10 right-0 flex flex-col items-end">
+                            <i class="fas fa-caret-up text-primary text-xl arrow-guide mr-4"></i>
+                        </div>
+                    </button>
+                    <div id="mobile-role-menu" class="role-menu-dropdown absolute right-0 mt-4 w-48 bg-white dark:bg-graphite-800 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl hidden overflow-hidden z-[60]">
+                        <div class="p-2 space-y-1">
+                            <a href="auth/login.html?role=admin" class="flex items-center gap-3 px-4 py-3 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition text-slate-900 dark:text-gray-100">
+                                <i class="fas fa-user-shield text-blue-500"></i> Admin
+                            </a>
+                            <a href="auth/login.html?role=operator" class="flex items-center gap-3 px-4 py-3 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition text-slate-900 dark:text-gray-100">
+                                <i class="fas fa-desktop text-emerald-500"></i> Operator
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="pt-28 pb-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div id="banner-container" class="relative h-[350px] md:h-[550px] bg-graphite-900 rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-200 dark:border-white/5">
+                <div class="flex items-center justify-center h-full text-white">
+                    <p class="animate-pulse italic">Menyiapkan Arena Digital...</p>
+                </div>
+            </div>
+            <div class="mt-16 text-center relative">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30 dark:opacity-5">
+                    <div class="absolute top-0 left-1/4 w-64 h-64 bg-blue-400 rounded-full blur-[100px]"></div>
+                    <div class="absolute top-0 right-1/4 w-64 h-64 bg-indigo-500 rounded-full blur-[100px]"></div>
+                </div>
+                <h1 id="hero-title" class="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-gray-500 uppercase">...</h1>
+                <p id="hero-desc" class="text-slate-500 dark:text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed italic">...</p>
+                <div class="mt-12 flex justify-center gap-4">
+                    <button onclick="showLoginGuide()" class="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-blue-500/30 hover:-translate-y-1 transition">Mulai Pertandingan</button>
+                    <a href="#tutorial" class="bg-slate-100 dark:bg-graphite-800 px-8 py-4 rounded-2xl font-bold hover:bg-slate-200 dark:hover:bg-graphite-900 transition border border-transparent dark:border-white/5">Lihat Panduan</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tutorial" class="py-24 bg-slate-50 dark:bg-graphite-900/40">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-4xl font-black mb-2">Tutorial Sistem</h2>
+            <p class="text-slate-500 dark:text-gray-400 mb-12">Pelajari langkah mudah mengoperasikan TMS Silat.</p>
+            <div id="tutorial-list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
+    <section id="event" class="py-24 bg-graphite-950 text-white border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-16 tracking-widest uppercase opacity-80">Event Yang Telah Bergabung</h2>
+            <div id="event-list" class="flex gap-12 justify-center flex-wrap opacity-50 grayscale hover:grayscale-0 transition-all duration-700"></div>
+        </div>
+    </section>
+
+    <footer class="bg-white dark:bg-graphite-950 border-t border-slate-200 dark:border-white/10 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 mb-20">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-black uppercase">SCORE</span>
+                        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">IN</div>
+                    </div>
+                    <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">Platform Digital Scoring System terbaik untuk kejuaraan Pencak Silat.</p>
+                </div>
+                <div class="lg:col-span-2 bg-slate-50 dark:bg-graphite-900/50 p-8 rounded-[2rem] border border-slate-100 dark:border-white/5">
+                    <h3 class="font-bold text-xl mb-6 text-primary"><i class="fas fa-comment-dots"></i> Kirim Saran</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="text" id="saran-nama" placeholder="Nama" class="w-full bg-white dark:bg-graphite-800 p-4 rounded-2xl border border-transparent dark:border-white/10 outline-none focus:ring-2 focus:ring-primary">
+                        <input type="number" id="saran-wa" placeholder="WhatsApp" class="w-full bg-white dark:bg-graphite-800 p-4 rounded-2xl border border-transparent dark:border-white/10 outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <textarea id="saran-pesan" class="w-full bg-white dark:bg-graphite-800 p-4 rounded-2xl border border-transparent dark:border-white/10 outline-none focus:ring-2 focus:ring-primary h-28 mb-4" placeholder="Saran Anda..."></textarea>
+                    <button onclick="kirimSaran()" class="bg-primary text-white px-10 py-4 rounded-2xl font-bold w-full md:w-auto hover:scale-105 transition">Kirim Saran</button>
+                </div>
+            </div>
+            <div class="pt-10 border-t border-slate-100 dark:border-white/5 text-center text-slate-500 text-xs uppercase tracking-widest">
+                © 2026 TMS SILAT - Bayu Reviyadi (Informatics UNMA)
+            </div>
+        </div>
+    </footer>
+
+    <div id="videoModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-graphite-950/95 transition-all">
+        <div class="bg-white dark:bg-graphite-900 w-full max-w-xl rounded-[2.5rem] overflow-hidden relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-graphite-800 rounded-full"><i class="fas fa-times"></i></button>
+            <div class="p-10 text-center">
+                <h3 id="modalTitle" class="text-3xl font-black mb-4"></h3>
+                <p id="modalDesc" class="text-slate-500 mb-8"></p>
+                <a id="modalLink" href="#" target="_blank" class="bg-red-600 text-white px-10 py-4 rounded-2xl inline-block font-bold">Tonton Video</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Panduan Login Animasi
+        function showLoginGuide() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const isMobile = window.innerWidth < 768;
+
+            if (isMobile) {
+                const mobileArrow = document.getElementById('mobileGuideArrow');
+                mobileArrow.classList.remove('hidden');
+
+                setTimeout(() => {
+                    document.getElementById('mobile-menu').classList.remove('hidden');
+                    mobileArrow.classList.add('hidden');
+                    
+                    const innerGuide = document.getElementById('innerMobileGuide');
+                    const loginBtn = document.getElementById('mobileRoleButton');
+                    innerGuide.classList.remove('hidden');
+                    loginBtn.classList.add('ring-4', 'ring-primary/50');
+
+                    setTimeout(() => {
+                        innerGuide.classList.add('hidden');
+                        loginBtn.classList.remove('ring-4', 'ring-primary/50');
+                    }, 3000);
+                }, 800);
+            } else {
+                const arrow = document.getElementById('guideArrow');
+                const roleBtn = document.getElementById('roleButton');
+                arrow.classList.remove('hidden');
+                roleBtn.classList.add('ring-4', 'ring-primary/50');
+
+                setTimeout(() => {
+                    arrow.classList.add('hidden');
+                    roleBtn.classList.remove('ring-4', 'ring-primary/50');
+                }, 4000);
+            }
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Fungsi Toggle Role Menu yang fleksibel (untuk Desktop & Mobile)
+        function toggleRoleMenu(menuId, btnId) {
+            const menu = document.getElementById(menuId);
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Tutup semua dropdown lain dulu
+            document.querySelectorAll('.role-menu-dropdown').forEach(m => m.classList.add('hidden'));
+            
+            if (isHidden) {
+                menu.classList.remove('hidden');
+            }
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if(icon) {
+                icon.classList.toggle('fa-moon');
+                icon.classList.toggle('fa-sun');
+            }
+        }
+
+        // Close menu when clicking outside
+        window.addEventListener('click', function(e) {
+            const menus = document.querySelectorAll('.role-menu-dropdown');
+            const triggers = document.querySelectorAll('.role-btn-trigger');
+            
+            let clickedOnTrigger = false;
+            triggers.forEach(t => { if(t.contains(e.target)) clickedOnTrigger = true; });
+
+            if (!clickedOnTrigger) {
+                menus.forEach(m => {
+                    if (!m.contains(e.target)) m.classList.add('hidden');
+                });
+            }
+        });
+
+        // --- Firebase Listeners (Logika Data Tetap Sama) ---
+        db.ref('landing_page/hero').on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('hero-title').innerText = data.title;
+                document.getElementById('hero-desc').innerText = data.desc;
+            }
+        });
+
+        db.ref('landing_page/banners').on('value', snap => {
+            const container = document.getElementById('banner-container');
+            container.innerHTML = "";
+            let i = 0;
+            snap.forEach(child => {
+                const b = child.val();
+                container.innerHTML += `
+                    <div class="banner-slide ${i === 0 ? 'active' : ''} h-full relative">
+                        <img src="${b.url}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-end p-8 md:p-16 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                            <h2 class="text-3xl md:text-5xl font-black text-white uppercase max-w-4xl">${b.txt}</h2>
+                        </div>
+                    </div>
+                `;
+                i++;
+            });
+            startBannerRotation();
+        });
+
+        db.ref('landing_page/tutorials').on('value', snap => {
+            const container = document.getElementById('tutorial-list');
+            container.innerHTML = "";
+            snap.forEach(child => {
+                const t = child.val();
+                container.innerHTML += `
+                    <div onclick="openModal('${t.title}', 'Tutorial penggunaan fitur ${t.title}.', '${t.link}')" 
+                        class="group bg-white dark:bg-graphite-900 rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100 dark:border-white/5 cursor-pointer hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500">
+                        <div class="h-44 overflow-hidden relative">
+                            <img src="${t.cover || 'https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=800'}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <i class="fas fa-play text-white text-3xl"></i>
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="font-bold text-xl mb-2 group-hover:text-primary transition">${t.title}</h3>
+                            <p class="text-sm text-slate-500 dark:text-gray-400">Klik untuk melihat panduan video.</p>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        db.ref('landing_page/events').on('value', snap => {
+            const container = document.getElementById('event-list');
+            container.innerHTML = "";
+            snap.forEach(child => {
+                container.innerHTML += `<img src="${child.val().url}" alt="Event" class="h-16 md:h-24 w-auto object-contain hover:scale-110 transition duration-500">`;
+            });
+        });
+
+        let bannerInterval;
+        function startBannerRotation() {
+            if(bannerInterval) clearInterval(bannerInterval);
+            let current = 0;
+            const slides = document.querySelectorAll('.banner-slide');
+            if(slides.length <= 1) return;
+            bannerInterval = setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 5000);
+        }
+
+        function kirimSaran() {
+            const nama = document.getElementById('saran-nama').value;
+            const wa = document.getElementById('saran-wa').value;
+            const pesan = document.getElementById('saran-pesan').value;
+            if(!nama || !wa || !pesan) return alert("Harap isi semua field!");
+            db.ref('saran_pengguna').push({ nama, wa, pesan, tgl: new Date().toISOString() })
+            .then(() => {
+                alert("Saran diterima!");
+                document.getElementById('saran-nama').value = "";
+                document.getElementById('saran-wa').value = "";
+                document.getElementById('saran-pesan').value = "";
+            });
+        }
+
+        function openModal(t, d, l) {
+            document.getElementById('modalTitle').innerText = t;
+            document.getElementById('modalDesc').innerText = d;
+            document.getElementById('modalLink').href = l;
+            document.getElementById('videoModal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('videoModal').classList.add('hidden'); }
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

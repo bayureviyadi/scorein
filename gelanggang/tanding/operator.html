@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Control</title>
+    <!-- My Style -->
+        <link rel="stylesheet" href="../../assets/css/gelanggang/tanding/operator.css">
+    <!-- My Style End -->
+</head>
+<body data-theme="standard">
+
+<div class="card">
+    <div class="header-section">
+        <h2 id="themeTitle">ADMIN MODE: STANDARD</h2>
+        <button class="btn-mode-cycle" onclick="cycleTheme()">GANTI MODE UI</button>
+    </div>
+    <div class="grid">
+        <div class="full"><label>NAMA TURNAMEN / EVENT</label><input type="text" id="event"></div>
+        <div class="full"><label>BABAK (CONTOH: PENYISIHAN / SEMIFINAL / FINAL)</label><input type="text" id="babak"></div>
+        
+        <div class="full"><label>KATEGORI KELAS / POOL</label><input type="text" id="kelas"></div>
+        <div class="full"><label>NOMOR PARTAI</label><input type="number" id="partai"></div>
+        <div><label>NAMA BIRU</label><input type="text" id="namaBiru"></div>
+        <div><label>KONTINGEN BIRU</label><input type="text" id="timBiru"></div>
+        <div><label>NAMA MERAH</label><input type="text" id="namaMerah"></div>
+        <div><label>KONTINGEN MERAH</label><input type="text" id="timMerah"></div>
+    </div>
+    <button class="btn btn-save" onclick="updateIdentity()">SIMPAN DATA PERTANDINGAN</button>
+</div>
+
+<div class="score-row">
+    <div class="score-box score-blue">
+        <div class="score-tag">SUDUT BIRU</div>
+        <div class="score-val" id="liveScoreBiru">0</div>
+    </div>
+    <div class="score-box score-red">
+        <div class="score-tag">SUDUT MERAH</div>
+        <div class="score-val" id="liveScoreMerah">0</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="header-section">
+        <h2>KONTROL TIMER & RONDE</h2>
+    </div>
+    <div class="time-select">
+        <button class="btn btn-time" id="t60" onclick="setDuration(60)">1 MIN</button>
+        <button class="btn btn-time" id="t90" onclick="setDuration(90)">1.5 MIN</button>
+        <button class="btn btn-time active" id="t120" onclick="setDuration(120)">2 MIN</button>
+    </div>
+
+    <div class="timer-display" id="timerDisp">02:00</div>
+    <div style="text-align:center; font-weight:900; margin-bottom:15px; font-size:1.2rem;">RONDE <span id="roundLabel">I</span></div>
+    
+    <div style="display:flex; gap:10px;">
+        <button class="btn btn-start" onclick="toggleTimer()" id="btnStart">START</button>
+        <button class="btn btn-stop" onclick="toggleTimer()" id="btnStop" style="display:none;">STOP / PAUSE</button>
+    </div>
+
+    <div class="round-btns">
+        <button class="btn btn-rd" id="rd1" onclick="setRound(1)">RD 1</button>
+        <button class="btn btn-rd" id="rd2" onclick="setRound(2)">RD 2</button>
+        <button class="btn btn-rd" id="rd3" onclick="setRound(3)">RD 3</button>
+        <button class="btn btn-reset" onclick="resetMatch()">RESET TOTAL DATA PERTANDINGAN</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script src="../../assets/js/auth-check.js"></script>
+<script src="../../assets/js/gelanggang/tanding/script-operatortd.js"></script>
+</body>
+</html>

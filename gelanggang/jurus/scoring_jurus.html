@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Seni Jurus — TMS Silat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #0a0a0a;
+            --ink-card: #131313;
+            --gold: #c9a84c;
+            --blue-accent: #3b82f6;
+            --border: rgba(255,255,255,0.07);
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #f0ede8;
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-bebas { font-family: 'Bebas Neue', cursive; }
+
+        .glass-card {
+            background: var(--ink-card);
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        .glass-card:hover::before { opacity: 1; }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(201, 168, 76, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Reveal Animation */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        .juri-number {
+            font-size: 3.5rem;
+            line-height: 1;
+            background: linear-gradient(180deg, #fff 30%, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center py-12 px-6">
+
+    <div class="max-w-5xl w-full">
+        <header class="text-center mb-16 reveal">
+            <div class="inline-block px-4 py-1 border border-[var(--gold)] text-[var(--gold)] text-[10px] tracking-[0.3em] font-bold uppercase mb-4">
+                International Pencak Silat Federation
+            </div>
+            <h1 class="text-6xl md:text-7xl font-bebas tracking-tighter text-white mb-2">
+                KATEGORI <span class="text-[var(--gold)]">JURUS</span>
+            </h1>
+            <p class="text-slate-500 font-medium tracking-widest text-xs uppercase">SCORE IN</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <div class="lg:col-span-7 space-y-6 reveal" style="transition-delay: 200ms;">
+                <h3 class="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mb-6 ml-2">
+                    <span class="w-8 h-[1px] bg-slate-800 mr-3"></span> Panel Juri Penilai
+                </h3>
+                <div id="juri-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6 reveal" style="transition-delay: 400ms;">
+                <h3 class="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mb-6 ml-2">
+                    <span class="w-8 h-[1px] bg-slate-800 mr-3"></span> Kontrol & Monitor
+                </h3>
+                
+                <div class="space-y-4">
+                    <a href="scoreboardjrs.html" class="glass-card p-6 rounded-none flex items-center group">
+                        <div class="w-14 h-14 bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mr-5 group-hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-tv text-blue-500 group-hover:text-white text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-white font-bold tracking-wider group-hover:text-[var(--gold)] transition-colors">SCOREBOARD</div>
+                            <div class="text-[9px] text-slate-500 uppercase font-bold tracking-widest mt-1">Main Display Monitoring</div>
+                        </div>
+                        <i class="fas fa-arrow-right text-slate-700 group-hover:text-[var(--gold)] group-hover:translate-x-2 transition-all"></i>
+                    </a>
+
+                    <div id="dewan-access" class="hidden">
+                        <a href="dewanjrs.html" class="glass-card p-6 rounded-none flex items-center group border-l-4 border-l-orange-600">
+                            <div class="w-14 h-14 bg-orange-600/10 border border-orange-600/20 flex items-center justify-center mr-5 group-hover:bg-orange-600 transition-colors">
+                                <i class="fas fa-gavel text-orange-600 group-hover:text-white text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-white font-bold tracking-wider group-hover:text-orange-400 transition-colors uppercase">Dewan Hakim</div>
+                                <div class="text-[9px] text-slate-500 uppercase font-bold tracking-widest mt-1">Match Decision Control</div>
+                            </div>
+                            <i class="fas fa-arrow-right text-slate-700 group-hover:text-orange-400 group-hover:translate-x-2 transition-all"></i>
+                        </a>
+                    </div>
+
+                    <a href="operatorjrs.html" class="glass-card p-6 rounded-none flex items-center group">
+                        <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mr-5 group-hover:bg-emerald-600 transition-colors">
+                            <i class="fas fa-user-gear text-emerald-500 group-hover:text-white text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-white font-bold tracking-wider group-hover:text-emerald-400 transition-colors">OPERATOR</div>
+                            <div class="text-[9px] text-slate-500 uppercase font-bold tracking-widest mt-1">Match Data & Config</div>
+                        </div>
+                        <i class="fas fa-arrow-right text-slate-700 group-hover:text-emerald-400 group-hover:translate-x-2 transition-all"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Observer for Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Update Konfigurasi
+        db.ref('seni_match/config').on('value', snap => {
+            const config = snap.val();
+            if(!config) return;
+
+            const juriGrid = document.getElementById('juri-grid');
+            juriGrid.innerHTML = "";
+            const count = config.juryCount || 3;
+
+            for(let i=1; i<=count; i++) {
+                juriGrid.innerHTML += `
+                    <a href="jurijrs.html?id=${i}" class="glass-card p-8 rounded-none text-center group block">
+                        <div class="text-[10px] font-bold text-slate-500 group-hover:text-[var(--gold)] mb-2 tracking-[0.3em] uppercase transition-colors">Juri</div>
+                        <div class="font-bebas juri-number group-hover:scale-110 transition-transform">0${i}</div>
+                        <div class="mt-4 h-1 w-8 bg-slate-800 mx-auto group-hover:w-16 group-hover:bg-[var(--gold)] transition-all"></div>
+                    </a>
+                `;
+            }
+
+            if(config.dewanActive) {
+                document.getElementById('dewan-access').classList.remove('hidden');
+            } else {
+                document.getElementById('dewan-access').classList.add('hidden');
+            }
+        });
+
+        // Security
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

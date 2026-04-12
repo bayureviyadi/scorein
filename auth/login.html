@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — TMS Silat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #c0392b;
+            --red-bright: #e74c3c;
+            --gold: #c9a84c;
+            --ink: #0e0e0e;
+            --ink-mid: #161616;
+            --ink-soft: #1f1f1f;
+            --ink-card: #131313;
+            --text: #f0ede8;
+            --text-muted: #7a7670;
+            --text-faint: #2e2c2a;
+            --border: rgba(255,255,255,0.07);
+            --border-input: rgba(255,255,255,0.1);
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-serif: 'DM Serif Display', serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--ink);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow: hidden;
+        }
+
+        ::selection { background: var(--red); color: #fff; }
+
+        /* FULL LAYOUT */
+        .page {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            position: relative;
+            overflow: hidden;
+            background: var(--ink-mid);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 3rem;
+        }
+        .left-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(160deg, rgba(192,57,43,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 70%, rgba(192,57,43,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .left-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        .left-noise {
+            position: absolute;
+            inset: 0;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            pointer-events: none;
+        }
+
+        /* DECORATIVE NUMBER */
+        .deco-num {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-family: var(--font-display);
+            font-size: 280px;
+            line-height: 1;
+            color: rgba(255,255,255,0.02);
+            letter-spacing: -10px;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* LOGO */
+        .left-logo {
+            position: absolute;
+            top: 3rem;
+            left: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .logo-wordmark {
+            font-family: var(--font-display);
+            font-size: 22px;
+            letter-spacing: 3px;
+            color: var(--text);
+        }
+        .logo-badge {
+            width: 32px;
+            height: 32px;
+            background: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: #fff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        /* ROLE BADGE */
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(192,57,43,0.4);
+            padding: 6px 14px;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 1.5rem;
+            background: rgba(192,57,43,0.06);
+            width: fit-content;
+        }
+        .role-badge-dot {
+            width: 6px; height: 6px;
+            background: var(--red);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .left-heading {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 5vw, 5.5rem);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            line-height: 0.93;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+        .left-heading em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--gold);
+            font-size: 0.9em;
+        }
+        .left-sub {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 320px;
+            margin-bottom: 3rem;
+        }
+
+        /* BOTTOM CREDIT */
+        .left-credit {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+        }
+        .left-credit span { color: var(--red); }
+
+        /* SIDE LINE DECORATION */
+        .side-line {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200px;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--red), transparent);
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 4rem;
+            background: var(--ink-card);
+            position: relative;
+            overflow: hidden;
+        }
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--red);
+        }
+
+        .form-wrap {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        /* HEADER */
+        .form-header {
+            margin-bottom: 2.5rem;
+        }
+        .form-eyebrow {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .form-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .form-role-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 0.75rem;
+        }
+        .role-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(192,57,43,0.12);
+            border: 1px solid rgba(192,57,43,0.3);
+            color: var(--red);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+        }
+        .role-pill i { font-size: 10px; }
+
+        /* FORM FIELDS */
+        .field-group {
+            margin-bottom: 1.25rem;
+        }
+        .field-label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .field-wrap {
+            position: relative;
+        }
+        .field-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: var(--text-faint);
+            pointer-events: none;
+            transition: color 0.2s;
+            z-index: 1;
+        }
+        .field-input {
+            width: 100%;
+            background: var(--ink-soft);
+            border: 1px solid var(--border-input);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            padding: 14px 16px 14px 44px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .field-input::placeholder { color: var(--text-faint); font-weight: 300; }
+        .field-input:focus { border-color: var(--red); background: rgba(192,57,43,0.04); }
+        .field-input:focus + .field-focus-line { width: 100%; }
+        .field-input[type="password"] { letter-spacing: 3px; }
+        .field-input[type="password"]::placeholder { letter-spacing: 0.5px; }
+
+        /* Focus accent line */
+        .field-focus-bar {
+            height: 1px;
+            background: var(--red);
+            width: 0;
+            transition: width 0.3s;
+            margin-top: -1px;
+        }
+        .field-wrap:focus-within .field-focus-bar { width: 100%; }
+        .field-wrap:focus-within .field-icon { color: var(--red); }
+
+        /* TOGGLE PW */
+        .toggle-pw {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-faint);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px;
+            transition: color 0.2s;
+            z-index: 1;
+        }
+        .toggle-pw:hover { color: var(--text-muted); }
+
+        /* SUBMIT BTN */
+        .btn-submit {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 28px;
+            background: var(--red);
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: background 0.2s, transform 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-submit:hover { background: var(--red-bright); transform: translateY(-1px); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* SHIMMER on button */
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            transition: left 0.4s;
+        }
+        .btn-submit:hover::after { left: 150%; }
+
+        /* SPINNER */
+        .spin { animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* BACK LINK */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            text-decoration: none;
+            margin-top: 2rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--text-muted); }
+
+        /* ERROR STATE */
+        .error-msg {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(192,57,43,0.1);
+            border: 1px solid rgba(192,57,43,0.3);
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #e57373;
+            margin-top: 1rem;
+            animation: shake 0.3s;
+        }
+        .error-msg.show { display: flex; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* DIVIDER */
+        .form-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0 0;
+        }
+        .form-divider::before, .form-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .form-divider span {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            white-space: nowrap;
+        }
+
+        /* SECURE BADGE */
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            margin-top: 1.5rem;
+        }
+        .secure-badge i { font-size: 9px; color: #34c38f; }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            html, body { overflow: auto; }
+            .page { grid-template-columns: 1fr; }
+            .left-panel { display: none; }
+            .right-panel { padding: 3rem 2rem; min-height: 100vh; }
+            .right-panel::before { display: block; }
+            .mobile-header {
+                display: flex !important;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 2.5rem;
+            }
+        }
+        .mobile-header { display: none; }
+
+        /* ENTRANCE ANIMATIONS */
+        .right-panel { animation: slideIn 0.5s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .left-panel > * { animation: fadeUp 0.6s ease both; }
+        .left-panel > *:nth-child(3) { animation-delay: 0.1s; }
+        .left-panel > *:nth-child(4) { animation-delay: 0.2s; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="left-bg"></div>
+        <div class="left-grid"></div>
+        <div class="left-noise"></div>
+        <div class="deco-num">01</div>
+        <div class="side-line"></div>
+
+        <a href="../index.html" class="left-logo">
+            <span class="logo-wordmark">SCORE</span>
+            <div class="logo-badge">IN</div>
+        </a>
+
+        <!-- BOTTOM COPY -->
+        <div>
+            <div class="role-badge">
+                <div class="role-badge-dot"></div>
+                <span id="role-label-left">Sistem Aktif</span>
+            </div>
+            <h1 class="left-heading">Akses<br><em>Arena</em><br>Digital</h1>
+            <p class="left-sub">Platform penilaian digital terpadu untuk kejuaraan Pencak Silat Indonesia. Autentikasi aman, real-time scoring.</p>
+            <p class="left-credit">© 2026 TMS Silat · <span>Bayu Reviyadi</span></p>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <!-- MOBILE ONLY LOGO -->
+        <div class="mobile-header">
+            <span class="logo-wordmark" style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;">SCORE</span>
+            <div class="logo-badge">IN</div>
+        </div>
+
+        <div class="form-wrap">
+            <div class="form-header">
+                <p class="form-eyebrow">Autentikasi Pengguna</p>
+                <h2 class="form-title">Masuk</h2>
+                <div class="form-role-line">
+                    <div class="role-pill">
+                        <i class="fas fa-circle" id="role-icon"></i>
+                        <span id="role-display">Memverifikasi...</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="field-group">
+                    <label class="field-label" for="username">Username</label>
+                    <div class="field-wrap">
+                        <i class="fas fa-user field-icon"></i>
+                        <input type="text" id="username" class="field-input" placeholder="Masukkan username" required autocomplete="off" spellcheck="false">
+                        <div class="field-focus-bar"></div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="password">Password</label>
+                    <div class="field-wrap">
+                        <i class="fas fa-lock field-icon"></i>
+                        <input type="password" id="password" class="field-input" placeholder="••••••••" required autocomplete="off">
+                        <button type="button" class="toggle-pw" onclick="togglePassword()" id="toggle-pw-btn">
+                            <i class="fas fa-eye" id="pw-eye"></i>
+                        </button>
+                        <div class="field-focus-bar"></div>
+                    </div>
+                </div>
+
+                <div class="error-msg" id="error-msg">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span id="error-text">Kredensial salah. Periksa kembali.</span>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-login">
+                    <i class="fas fa-arrow-right-to-bracket"></i>
+                    <span id="btn-text">Masuk ke Sistem</span>
+                </button>
+            </form>
+
+            <div class="form-divider">
+                <span>Encrypted Session</span>
+            </div>
+
+            <div style="text-align:center;">
+                <a href="../index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+            </div>
+
+            <div class="secure-badge">
+                <i class="fas fa-shield-halved"></i>
+                <span>Secured · Session Encrypted</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+        databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "tms-silat-sera"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Role Setup
+    const urlParams = new URLSearchParams(window.location.search);
+    let role = urlParams.get('role');
+    if (role === 'super') role = 'super_admin';
+
+    const roleConfig = {
+        'admin': {
+            label: 'Administrator',
+            icon: 'fa-user-shield',
+            color: '#5b8dee'
+        },
+        'operator': {
+            label: 'Operator Gelanggang',
+            icon: 'fa-desktop',
+            color: '#34c38f'
+        },
+        'super_admin': {
+            label: 'Super Admin',
+            icon: 'fa-crown',
+            color: '#c9a84c'
+        }
+    };
+
+    if (!role || !roleConfig[role]) {
+        alert("Role tidak valid!");
+        window.location.href = "../index.html";
+    }
+
+    const cfg = roleConfig[role];
+    document.getElementById('role-display').innerText = cfg.label;
+    document.getElementById('role-label-left').innerText = cfg.label;
+
+    const roleIcon = document.getElementById('role-icon');
+    roleIcon.className = 'fas ' + cfg.icon;
+    roleIcon.style.color = cfg.color;
+    document.querySelector('.role-pill').style.borderColor = cfg.color + '55';
+    document.querySelector('.role-pill').style.background = cfg.color + '15';
+    document.getElementById('role-display').style.color = cfg.color;
+
+    // Toggle Password
+    let pwVisible = false;
+    function togglePassword() {
+        pwVisible = !pwVisible;
+        const input = document.getElementById('password');
+        const icon = document.getElementById('pw-eye');
+        input.type = pwVisible ? 'text' : 'password';
+        icon.className = pwVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
+    }
+
+    // Show Error
+    function showError(msg) {
+        const el = document.getElementById('error-msg');
+        document.getElementById('error-text').innerText = msg;
+        el.classList.add('show');
+    }
+    function hideError() { document.getElementById('error-msg').classList.remove('show'); }
+
+    // Set Loading
+    function setLoading(loading) {
+        const btn = document.getElementById('btn-login');
+        const txt = document.getElementById('btn-text');
+        if (loading) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch spin"></i><span>Memverifikasi...</span>';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i><span>Masuk ke Sistem</span>';
+        }
+    }
+
+    // Form Submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideError();
+        const userIn = document.getElementById('username').value.trim();
+        const passIn = document.getElementById('password').value;
+        if (!userIn || !passIn) { showError('Username dan password wajib diisi.'); return; }
+
+        setLoading(true);
+
+        let userIP = "Unknown";
+        try {
+            const ctrl = new AbortController();
+            const tid = setTimeout(() => ctrl.abort(), 3000);
+            const res = await fetch('https://api.ipify.org?format=json', { signal: ctrl.signal });
+            const data = await res.json();
+            userIP = data.ip;
+            clearTimeout(tid);
+        } catch (_) {}
+
+        db.ref('users/' + role).once('value', (snap) => {
+            const userData = snap.val();
+            if (userData && userData.username === userIn && userData.password === passIn) {
+                db.ref('users/' + role).update({
+                    isLoggedIn: true,
+                    lastIP: userIP,
+                    lastLogin: new Date().toLocaleString()
+                }).then(() => {
+                    localStorage.setItem('userRole', role);
+                    localStorage.setItem('isAuth', 'true');
+                    const redirectMap = {
+                        'super_admin': '../super/master.html',
+                        'admin': 'admin_pertandingan.html',
+                        'operator': '../gelanggang/kategori.html'
+                    };
+                    window.location.href = redirectMap[role] || '../index.html';
+                });
+            } else {
+                setLoading(false);
+                showError('Kredensial salah. Periksa kembali username dan password.');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        });
+    });
+
+    // Security
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73,74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault(); return false;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Silat - Menu Seni Jurus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .btn-access {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-access:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-12">
+            <div class="inline-block p-3 bg-blue-600 rounded-2xl mb-4 shadow-lg shadow-blue-200">
+                <i class="fas fa-medal text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-black tracking-tight text-slate-900 mb-2">TANDING SENI JURUS</h1>
+            <p class="text-slate-500 font-medium">Sistem Penilaian Digital IPSI</p>
+        </header>
+
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <section>
+                <h3 class="flex items-center text-sm font-black text-slate-400 uppercase tracking-widest mb-4 px-2">
+                    <i class="fas fa-users-viewfinder mr-2"></i> Akses Juri
+                </h3>
+                <div id="juri-grid" class="grid grid-cols-3 gap-3">
+                    </div>
+            </section>
+
+            <section class="space-y-6">
+                <div>
+                    <h3 class="flex items-center text-sm font-black text-slate-400 uppercase tracking-widest mb-4 px-2">
+                        <i class="fas fa-desktop mr-2"></i> Publik & Kontrol
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <a href="scoreboardjrs.html" class="btn-access glass-card p-5 rounded-2xl flex items-center group hover:bg-slate-900 hover:text-white">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-600">
+                                <i class="fas fa-tv text-blue-600 group-hover:text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-black">SCOREBOARD</div>
+                                <div class="text-[10px] text-slate-400 uppercase font-bold group-hover:text-slate-400">Tampilan Layar Utama</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-300 group-hover:text-white"></i>
+                        </a>
+
+                        <div id="dewan-access" class="hidden">
+                            <a href="dewanjrs.html" class="btn-access glass-card p-5 rounded-2xl flex items-center group hover:bg-orange-600 hover:text-white">
+                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-orange-500">
+                                    <i class="fas fa-gavel text-orange-600 group-hover:text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-black">DEWAN HAKIM</div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold group-hover:text-orange-200">Kontrol Pertandingan</div>
+                                </div>
+                                <i class="fas fa-chevron-right text-slate-300 group-hover:text-white"></i>
+                            </a>
+                        </div>
+
+                        <a href="operatorjrs.html" class="btn-access glass-card p-5 rounded-2xl flex items-center group hover:bg-emerald-600 hover:text-white">
+    <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-emerald-500">
+        <i class="fas fa-user-gear text-emerald-600 group-hover:text-white"></i>
+    </div>
+    <div class="flex-1">
+        <div class="text-sm font-black">OPERATOR</div>
+        <div class="text-[10px] text-slate-400 uppercase font-bold group-hover:text-emerald-100">Input Data & Konfigurasi</div>
+    </div>
+    <i class="fas fa-chevron-right text-slate-300 group-hover:text-white"></i>
+</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+
+        // Update Konfigurasi
+        db.ref('seni_match/config').on('value', snap => {
+            const config = snap.val();
+            if(!config) return;
+
+            // Render Tombol Juri
+            const juriGrid = document.getElementById('juri-grid');
+            juriGrid.innerHTML = "";
+            const count = config.juryCount || 3;
+
+            for(let i=1; i<=count; i++) {
+                juriGrid.innerHTML += `
+                    <a href="jurijrs.html?id=${i}" class="btn-access glass-card p-4 rounded-2xl text-center hover:bg-blue-600 hover:text-white group">
+                        <div class="text-xs font-black text-slate-400 group-hover:text-blue-200 mb-1">JURI</div>
+                        <div class="text-2xl font-black">${i}</div>
+                    </a>
+                `;
+            }
+
+            // Tampilkan Dewan Hakim Jika Aktif
+            if(config.dewanActive) {
+                document.getElementById('dewan-access').classList.remove('hidden');
+            } else {
+                document.getElementById('dewan-access').classList.add('hidden');
+            }
+        });
+// 1. Matikan Klik Kanan
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Matikan Pintasan Keyboard (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J)
+document.addEventListener('keydown', e => {
+    if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+    </script>
+</body>
+</html>

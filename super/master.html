@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Control - Super Admin TMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        .unread { border-left: 4px solid #3b82f6; background-color: rgba(59, 130, 246, 0.05); }
+        .dark .unread { background-color: rgba(59, 130, 246, 0.1); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <script src="../assets/js/auth-check.js"></script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen transition-colors duration-300">
+
+    <div class="flex">
+        <aside class="w-64 bg-white dark:bg-slate-900 min-h-screen border-r border-slate-200 dark:border-slate-800 hidden md:block sticky top-0 h-screen">
+            <div class="p-6">
+                <h1 class="text-xl font-black text-blue-600">SUPER ADMIN</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">TMS Silat Control</p>
+            </div>
+            <nav class="mt-6 px-4 space-y-2">
+                <a href="master.html" class="flex items-center gap-3 p-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-layer-group"></i> CMS Landing
+                </a>
+                
+                <a href="role.html" class="flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition text-slate-600 dark:text-slate-400 font-medium">
+                    <i class="fas fa-user-shield text-amber-500"></i> Pengaturan Akun
+                </a>
+
+                <a href="../index.html" class="flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition text-slate-500">
+                    <i class="fas fa-external-link-alt"></i> Lihat Web
+                </a>
+                
+                <button onclick="logout()" class="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition mt-10">
+                    <i class="fas fa-sign-out-alt"></i> Keluar
+                </button>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-4 md:p-10 space-y-10 overflow-x-hidden">
+            <header class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Landing Page Control</h2>
+                <button onclick="toggleDarkMode()" class="p-2 bg-slate-200 dark:bg-slate-800 rounded-lg">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-heading text-blue-500"></i> Hero Section</h3>
+                    <input type="text" id="input-hero-title" placeholder="Judul Hero" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl mb-3 border border-slate-200 dark:border-slate-700 outline-none">
+                    <textarea id="input-hero-desc" placeholder="Deskripsi Hero" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl mb-3 border border-slate-200 dark:border-slate-700 h-24 outline-none"></textarea>
+                    <button onclick="updateHero()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Update Hero</button>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-images text-purple-500"></i> Auto Banner</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="banner-url" placeholder="Link Gambar (URL)" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none">
+                        <input type="text" id="banner-text" placeholder="Teks Banner" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none">
+                        <button onclick="addBanner()" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-purple-700 transition">+ Tambah Banner</button>
+                    </div>
+                    <div id="banner-list" class="mt-4 space-y-2 max-h-40 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-play-circle text-red-500"></i> Section Tutorial</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="tut-title" placeholder="Judul Tutorial" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none">
+                        <input type="text" id="tut-link" placeholder="Link YouTube" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none">
+                        <input type="text" id="tut-cover" placeholder="URL Cover Image (Optional)" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none">
+                        <button onclick="addTutorial()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition">+ Tambah Tutorial</button>
+                    </div>
+                    <div id="tutorial-list-admin" class="mt-4 space-y-2 max-h-60 overflow-y-auto pr-2"></div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-calendar-check text-emerald-500"></i> Event Logo</h3>
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="event-url" placeholder="URL Logo Event" class="flex-1 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none">
+                        <button onclick="addEvent()" class="bg-emerald-600 text-white px-6 rounded-xl font-bold hover:bg-emerald-700 transition">Tambah</button>
+                    </div>
+                    <div id="event-list-admin" class="flex flex-wrap gap-3 max-h-60 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <h3 class="font-black text-xl flex items-center gap-2 text-amber-500"><i class="fas fa-comment-dots"></i> Kotak Saran & Masukan</h3>
+                    <div class="relative w-full md:w-72">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchSaran" onkeyup="filterSaran()" placeholder="Cari nama atau pesan..." class="w-full bg-slate-50 dark:bg-slate-800 pl-12 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-amber-500 transition">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 font-bold">Nama Pengirim</th>
+                                <th class="p-4 font-bold">WhatsApp</th>
+                                <th class="p-4 font-bold">Isi Pesan</th>
+                                <th class="p-4 font-bold text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saran-table-body" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalPesan" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2rem] overflow-hidden shadow-2xl relative">
+            <button onclick="closeModalPesan()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-900 transition"><i class="fas fa-times text-xl"></i></button>
+            <div class="p-10">
+                <div id="statusBadge" class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-4"></div>
+                <h4 id="detailNama" class="text-2xl font-black mb-1"></h4>
+                <p id="detailTgl" class="text-xs text-slate-500 mb-6"></p>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl mb-8 border border-slate-100 dark:border-slate-700 italic text-slate-700 dark:text-slate-300">
+                    <p id="detailIsi"></p>
+                </div>
+                <div class="flex gap-3">
+                    <a id="btnBalasWA" target="_blank" class="flex-1 bg-emerald-500 text-white py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-2 hover:bg-emerald-600 transition">
+                        <i class="fab fa-whatsapp"></i> Balas ke WA
+                    </a>
+                    <button id="btnHapusDetail" class="w-14 bg-red-100 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- INISIALISASI DATABASE ---
+        const db = firebase.database();
+
+        // --- FUNGSI OTOMATIS +62 PADA INPUT WA (Logika yang Anda minta) ---
+        // Catatan: Jika input WA ada di halaman user, tempelkan fungsi ini di sana.
+        // Di sini saya buatkan listener global jika ada input dengan tipe tel atau ID tertentu.
+        document.addEventListener('input', function (e) {
+            if (e.target.id === 'input-wa' || e.target.placeholder.toLowerCase().includes('whatsapp')) {
+                let val = e.target.value;
+                if (val.startsWith('0')) {
+                    e.target.value = '+62' + val.substring(1);
+                }
+                // Filter hanya angka dan +
+                e.target.value = e.target.value.replace(/[^\d+]/g, '');
+            }
+        });
+
+        // --- FUNGSI HERO ---
+        db.ref('landing_page/hero').on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('input-hero-title').value = data.title || "";
+                document.getElementById('input-hero-desc').value = data.desc || "";
+            }
+        });
+        function updateHero() {
+            db.ref('landing_page/hero').set({
+                title: document.getElementById('input-hero-title').value,
+                desc: document.getElementById('input-hero-desc').value
+            }).then(() => alert("Hero Section Updated!"));
+        }
+
+        // --- FUNGSI BANNER ---
+        function addBanner() {
+            const url = document.getElementById('banner-url').value;
+            const txt = document.getElementById('banner-text').value;
+            if(url && txt) {
+                db.ref('landing_page/banners').push({ url, txt });
+                document.getElementById('banner-url').value = "";
+                document.getElementById('banner-text').value = "";
+            }
+        }
+        db.ref('landing_page/banners').on('value', snap => {
+            const list = document.getElementById('banner-list');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                list.innerHTML += `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 transition hover:border-purple-500">
+                    <span class="text-xs truncate w-48 font-medium">${child.val().txt}</span>
+                    <button onclick="deleteGeneral('banners/${child.key}')" class="text-red-400 hover:text-red-600 p-2 transition"><i class="fas fa-trash-alt"></i></button>
+                </div>`;
+            });
+        });
+
+        // --- FUNGSI TUTORIAL ---
+        function addTutorial() {
+            const title = document.getElementById('tut-title').value;
+            const link = document.getElementById('tut-link').value;
+            const cover = document.getElementById('tut-cover').value;
+            if(title && link) {
+                db.ref('landing_page/tutorials').push({ title, link, cover: cover || "" });
+                document.getElementById('tut-title').value = "";
+                document.getElementById('tut-link').value = "";
+                document.getElementById('tut-cover').value = "";
+            }
+        }
+        db.ref('landing_page/tutorials').on('value', snap => {
+            const list = document.getElementById('tutorial-list-admin');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                list.innerHTML += `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-100 text-red-600 rounded flex items-center justify-center"><i class="fas fa-play text-xs"></i></div>
+                        <span class="font-bold text-sm">${child.val().title}</span>
+                    </div>
+                    <button onclick="deleteGeneral('tutorials/${child.key}')" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                </div>`;
+            });
+        });
+
+        // --- FUNGSI EVENT ---
+        function addEvent() {
+            const url = document.getElementById('event-url').value;
+            if(url) {
+                db.ref('landing_page/events').push({ url });
+                document.getElementById('event-url').value = "";
+            }
+        }
+        db.ref('landing_page/events').on('value', snap => {
+            const list = document.getElementById('event-list-admin');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                list.innerHTML += `<div class="relative group h-16 w-24 bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 p-2 flex items-center justify-center">
+                    <img src="${child.val().url}" class="max-h-full max-w-full object-contain">
+                    <button onclick="deleteGeneral('events/${child.key}')" class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full text-[10px] opacity-0 group-hover:opacity-100 transition shadow-lg"><i class="fas fa-times"></i></button>
+                </div>`;
+            });
+        });
+
+        // --- FUNGSI KOTAK SARAN ---
+        db.ref('saran_pengguna').on('value', snap => {
+            const tbody = document.getElementById('saran-table-body');
+            tbody.innerHTML = "";
+            snap.forEach(child => {
+                const s = child.val();
+                const isRead = s.status === 'read';
+                tbody.innerHTML += `
+                    <tr class="saran-row hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition cursor-pointer ${!isRead ? 'unread font-bold' : ''}" 
+                        data-nama="${s.nama}" data-pesan="${s.pesan}">
+                        <td class="p-4" onclick="viewPesan('${child.key}')">
+                            ${!isRead ? '<span class="flex h-2 w-2 rounded-full bg-blue-500"></span>' : '<i class="fas fa-check-double text-slate-300 text-[10px]"></i>'}
+                        </td>
+                        <td class="p-4 whitespace-nowrap" onclick="viewPesan('${child.key}')">${s.nama || 'Anonim'}</td>
+                        <td class="p-4 text-slate-500" onclick="viewPesan('${child.key}')">${s.wa || '-'}</td>
+                        <td class="p-4 max-w-xs truncate text-slate-400 font-normal" onclick="viewPesan('${child.key}')">${s.pesan}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="deleteSaran('${child.key}')" class="text-red-400 hover:text-red-600 transition p-2">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        function filterSaran() {
+            const val = document.getElementById('searchSaran').value.toLowerCase();
+            document.querySelectorAll('.saran-row').forEach(row => {
+                const text = (row.dataset.nama + row.dataset.pesan).toLowerCase();
+                row.style.display = text.includes(val) ? 'table-row' : 'none';
+            });
+        }
+
+        function viewPesan(id) {
+            db.ref('saran_pengguna/' + id).once('value', snap => {
+                const s = snap.val();
+                if (!s) return;
+                const modal = document.getElementById('modalPesan');
+                document.getElementById('detailNama').innerText = s.nama || 'Anonim';
+                document.getElementById('detailTgl').innerText = s.tgl ? new Date(s.tgl).toLocaleString('id-ID') : '-';
+                document.getElementById('detailIsi').innerText = s.pesan || '';
+                const badge = document.getElementById('statusBadge');
+                const isRead = s.status === 'read';
+                badge.innerText = isRead ? 'Sudah Dibaca' : 'Pesan Baru';
+                badge.className = isRead 
+                    ? 'inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-4 bg-slate-100 text-slate-500' 
+                    : 'inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-4 bg-blue-100 text-blue-600';
+
+                const btnWA = document.getElementById('btnBalasWA');
+                if (s.wa && s.wa !== '-') {
+                    const waClean = s.wa.replace(/\D/g, '');
+                    const waFinal = waClean.startsWith('0') ? '62' + waClean.slice(1) : waClean;
+                    btnWA.href = `https://wa.me/${waFinal}?text=Halo%20${encodeURIComponent(s.nama)},%20terima%20kasih%20atas%20sarannya:%20"${encodeURIComponent(s.pesan)}"`;
+                    btnWA.style.display = "flex";
+                } else {
+                    btnWA.style.display = "none";
+                }
+                document.getElementById('btnHapusDetail').onclick = () => deleteSaran(id);
+                modal.classList.remove('hidden');
+                db.ref('saran_pengguna/' + id).update({ status: 'read' });
+            });
+        }
+
+        function closeModalPesan() { document.getElementById('modalPesan').classList.add('hidden'); }
+
+        // --- FUNGSI UMUM ---
+        function deleteGeneral(path) {
+            if(confirm('Hapus item ini?')) db.ref('landing_page/' + path).remove();
+        }
+
+        function deleteSaran(id) {
+            if(confirm('Hapus saran ini secara permanen?')) {
+                db.ref('saran_pengguna/' + id).remove();
+                closeModalPesan();
+            }
+        }
+
+        function toggleDarkMode() { 
+            document.documentElement.classList.toggle('dark'); 
+            const icon = document.getElementById('theme-icon');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
+        
+        function logout() { 
+            const currentRole = localStorage.getItem('userRole');
+            if(currentRole) {
+                db.ref('users/' + currentRole).update({ isLoggedIn: false });
+            }
+            localStorage.clear();
+            window.location.href = "../auth/login.html"; 
+        }
+        
+        // Monitoring logout paksa dari Admin lain
+        const currentId = localStorage.getItem('userRole');
+        if(currentId) {
+            db.ref('users/' + currentId + '/isLoggedIn').on('value', snap => {
+                if (snap.val() === false) {
+                    alert("Sesi Anda telah dihentikan!");
+                    window.location.href = "../auth/login.html";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

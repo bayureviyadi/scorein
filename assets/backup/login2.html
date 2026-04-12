@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TMS Silat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+        <div class="p-8">
+            <div class="text-center mb-10">
+                <h1 class="text-2xl font-black uppercase tracking-tight italic text-slate-900">SKORIN</h1>
+                <p id="role-display" class="text-slate-400 font-bold text-xs mt-1 uppercase tracking-[0.2em]">Memverifikasi Role...</p>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-[10px] font-black uppercase text-slate-500 mb-2 ml-1 tracking-widest">Username</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-4 text-slate-400"></i>
+                        <input type="text" id="username" required placeholder="Masukkan username"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-11 outline-none focus:ring-2 focus:ring-blue-600 transition text-sm font-bold text-slate-900">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black uppercase text-slate-500 mb-2 ml-1 tracking-widest">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-4 text-slate-400"></i>
+                        <input type="password" id="password" required placeholder="••••••••"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-11 outline-none focus:ring-2 focus:ring-blue-600 transition text-sm font-bold tracking-widest text-slate-900">
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-login"
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-600/20 transition duration-300 flex items-center justify-center gap-3 uppercase text-sm italic">
+                    Login <i class="fas fa-chevron-right text-xs"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <a href="../index.html" class="text-[10px] font-bold text-slate-400 hover:text-blue-500 transition uppercase tracking-widest">
+                    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+        
+        <div class="bg-slate-50 p-4 text-center border-t border-slate-100">
+            <p class="text-[9px] text-slate-400 uppercase tracking-[0.3em] font-bold">Encrypted Session Security System</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaY8iCrMLVHXukVTih5ZPLzLj-2JoQKv0",
+            databaseURL: "https://tms-silat-sera-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tms-silat-sera"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Ambil Role dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let role = urlParams.get('role'); 
+        if(role === 'super') role = 'super_admin'; 
+
+        const roleText = {
+            'admin': 'Administrator',
+            'operator': 'Operator Gelanggang',
+            'super_admin': 'Super Admin'
+        };
+
+        if (!role || !roleText[role]) {
+            alert("Role tidak valid!");
+            window.location.href = "../index.html";
+        }
+
+        document.getElementById('role-display').innerText = roleText[role];
+
+        // Event Listener Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const userIn = document.getElementById('username').value;
+            const passIn = document.getElementById('password').value;
+
+            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> MEMPROSES...';
+            btn.disabled = true;
+
+            let userIP = "Unknown";
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const response = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+                const data = await response.json();
+                userIP = data.ip;
+                clearTimeout(timeoutId);
+            } catch (err) { console.log("Gagal mengambil IP."); }
+
+            db.ref('users/' + role).once('value', (snap) => {
+                const userData = snap.val();
+                if (userData && userData.username === userIn && userData.password === passIn) {
+                    db.ref('users/' + role).update({
+                        isLoggedIn: true,
+                        lastIP: userIP,
+                        lastLogin: new Date().toLocaleString()
+                    }).then(() => {
+                        localStorage.setItem('userRole', role);
+                        localStorage.setItem('isAuth', 'true');
+                        const redirectMap = {
+                            'super_admin': '../super/master.html',
+                            'admin': 'admin_pertandingan.html',
+                            'operator': '../gelanggang/kategori.html'
+                        };
+                        window.location.href = redirectMap[role] || 'index.html';
+                    });
+                } else {
+                    alert("Kredensial Salah!");
+                    btn.innerHTML = 'VERIFIKASI AKSES <i class="fas fa-chevron-right text-xs"></i>';
+                    btn.disabled = false;
+                }
+            });
+        });
+
+        // Security: Nonaktifkan Inspect Element
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73) || (e.ctrlKey && e.shiftKey && e.keyCode === 74) || (e.ctrlKey && e.keyCode === 85)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

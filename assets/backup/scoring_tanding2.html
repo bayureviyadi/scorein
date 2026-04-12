@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Silat - Scoring Tanding</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e293b;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --juri-bg: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --juri-bg: #334155;
+            --secondary: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: block; 
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            padding: 20px 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo-header {
+            height: 40px;
+            width: auto;
+            margin-right: 12px;
+        }
+
+        /* Header Area */
+        .header-container {
+            width: 90%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+        }
+
+        h1 { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 1.3rem; margin: 0; }
+
+        .top-nav { display: flex; gap: 10px; }
+
+        .btn-icon {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn-logout { background: var(--danger); color: white; border: none; font-weight: bold; }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1000px;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+        }
+
+        .card span:last-child { font-weight: 800; font-size: 1.1rem; }
+
+        .juri-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn-juri { background: var(--juri-bg); padding: 20px; border-radius: 15px; }
+        .badge { 
+            font-size: 0.65rem; 
+            background: var(--primary); 
+            color: white; 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            width: fit-content; 
+            margin: 0 auto; 
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-container">
+            <div class="header-title-box">
+                <img src="../../assets/img/sera.png" alt="Logo" class="logo-header">
+                <h1>Scoring <span style="color: var(--primary)">Silat</span></h1>
+            </div>
+            <div class="top-nav">
+                <button class="btn-icon" onclick="toggleDarkMode()" title="Ganti Tema">🌓</button>
+                <button class="btn-icon btn-logout" onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+
+        <div class="menu-grid">
+            <a href="dewan.html" class="card">
+                <span class="badge" style="background: #f59e0b;">CONTROL</span>
+                <span>DEWAN MATCH</span>
+            </a>
+
+            <a href="operator.html" class="card">
+                <span class="badge">ADMIN</span>
+                <span>OPERATOR IT</span>
+            </a>
+
+            <a href="scoreboard.html" class="card">
+                <span class="badge" style="background: var(--accent);">VIEW</span>
+                <span>SCOREBOARD</span>
+            </a>
+
+            <div class="juri-section">
+                <a href="wasit.html?id=1" class="card btn-juri">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">JUDGE</span>
+                    <span>JURI 1</span>
+                </a>
+                <a href="wasit.html?id=2" class="card btn-juri">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">JUDGE</span>
+                    <span>JURI 2</span>
+                </a>
+                <a href="wasit.html?id=3" class="card btn-juri">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">JUDGE</span>
+                    <span>JURI 3</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script src="../../assets/js/auth-check.js"></script>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Load Theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        function logout() {
+            if (confirm("Keluar dan kunci sistem?")) {
+                sessionStorage.removeItem('isAuthorized');
+                window.location.href = '../../auth/login.html?role=operator';
+            }
+        }
+    </script>
+</body>
+</html>
