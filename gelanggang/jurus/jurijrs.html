@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>
+        if (localStorage.getItem('isAuth') !== 'true') {
+            window.location.href = '../../auth/login.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Penilaian Juri Seni - TMS Silat</title>
@@ -149,12 +154,13 @@
 
         db.ref(`live_scores/seni/${juriPath}`).on('value', snap => {
             if (!snap.exists()) {
+                // Reset nilai lokal juri saat skor dihapus dari Firebase
                 wrongMoveCount = 0;
                 flowScore = 0.00;
                 document.getElementById('accuracy-score').innerText = "0";
                 document.getElementById('total-score').innerText = "9.90";
                 document.querySelectorAll('.flow-btn').forEach(btn => btn.classList.remove('active'));
-                if(isReady) toggleReady(); 
+                // Jangan otomatis toggle ready — biarkan juri yang memutuskan
             }
         });
 
@@ -260,8 +266,9 @@
             }
         }
 
-        db.ref('seni_match/system/mode').on('value', snap => {
-            let mode = snap.val() || 'pool';
+        // Baca matchMode dari config (bukan system/mode yang tidak ada)
+        db.ref('seni_match/config/matchMode').on('value', snap => {
+            const mode = snap.val() || 'pool';
             document.getElementById('ui-pool').classList.toggle('hidden', mode !== 'pool');
             document.getElementById('ui-versus').classList.toggle('hidden', mode !== 'versus');
         });

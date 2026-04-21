@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>
+        if (localStorage.getItem('isAuth') !== 'true') {
+            window.location.href = '../../auth/login.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ketua Pertandingan - TMS Silat</title>
@@ -50,6 +55,13 @@
 
             <div class="space-y-6">
                 <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-2">Status & Ringkasan</h3>
+
+                <!-- Pool Progress Card (hidden in versus mode) -->
+                <div id="pool-queue-section" class="hidden bg-indigo-600 rounded-3xl p-5 text-white border border-indigo-700 shadow-xl">
+                    <p class="text-indigo-200 text-[10px] font-black uppercase mb-1">Mode Pool</p>
+                    <div id="pool-progress-ketua" class="text-3xl font-black italic tracking-tighter">Atlet ? dari ?</div>
+                </div>
+
                 <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl space-y-6">
                     <div class="text-center">
                         <p class="text-slate-400 text-[10px] font-black uppercase mb-1">Rata-rata Skor Sementara</p>
@@ -89,13 +101,30 @@
         const db = firebase.database();
 
         let currentJuryConfig = 3;
+        let currentMatchMode = 'versus';
 
-        // 1. Pantau Konfigurasi (Berapa jumlah juri)
+        // 1. Pantau Konfigurasi (Berapa jumlah juri + mode)
         db.ref('seni_match/config').on('value', snap => {
             const config = snap.val();
             if(config) {
                 currentJuryConfig = config.juryCount || 3;
+                currentMatchMode = config.matchMode || 'versus';
                 initJuriCards();
+
+                // Show pool queue section if in pool mode
+                const poolSection = document.getElementById('pool-queue-section');
+                if(poolSection) poolSection.classList.toggle('hidden', currentMatchMode !== 'pool');
+            }
+        });
+
+        // 2. Pantau Pool Config
+        db.ref('seni_match/pool_config').on('value', snap => {
+            const data = snap.val();
+            if(!data) return;
+            const el = document.getElementById('pool-progress-ketua');
+            if(el) {
+                const idx = (data.currentIndex || 0) + 1;
+                el.innerText = `Atlet ${idx} dari ${data.totalAthletes || '?'}`;
             }
         });
 

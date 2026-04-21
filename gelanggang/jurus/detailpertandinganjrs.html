@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>
+        if (localStorage.getItem('isAuth') !== 'true') {
+            window.location.href = '../../auth/login.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scoreboard Result - Official Light</title>
@@ -82,53 +87,81 @@
 <body class="flex items-center justify-center p-4">
 
     <div class="w-full max-w-xl flex flex-col items-center">
-        <div id="winner-banner" class="mb-6 p-6 rounded-3xl text-center hidden uppercase font-black italic tracking-tighter text-4xl border-4 relative overflow-hidden w-full">
-            <div class="relative z-10">
-                <i class="fas fa-trophy mr-3"></i>
-                WINNER: <span id="winner-name">---</span>
+        <!-- VERSUS RESULT (default) -->
+        <div id="view-versus">
+            <div id="winner-banner" class="mb-6 p-6 rounded-3xl text-center hidden uppercase font-black italic tracking-tighter text-4xl border-4 relative overflow-hidden w-full">
+                <div class="relative z-10">
+                    <i class="fas fa-trophy mr-3"></i>
+                    WINNER: <span id="winner-name">---</span>
+                </div>
+                <div class="shimmer-effect"></div>
             </div>
-            <div class="shimmer-effect"></div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="popup-header text-left pl-6">Detail Point</th>
+                        <th colspan="2" class="popup-header">Score Result</th>
+                    </tr>
+                    <tr>
+                        <th class="bg-blue-600 text-white py-2 text-[10px] uppercase font-black">Biru</th>
+                        <th class="bg-red-600 text-white py-2 text-[10px] uppercase font-black">Merah</th>
+                    </tr>
+                </thead>
+                <tbody id="popup-body-results">
+                    <tr>
+                        <td class="text-left pl-6 font-bold italic text-slate-500 bg-slate-50/50 text-sm">Median Juri</td>
+                        <td id="pop-median-biru" class="font-mono-score text-xl text-blue-600">0.00</td>
+                        <td id="pop-median-merah" class="font-mono-score text-xl text-red-600">0.00</td>
+                    </tr>
+                    <tr id="detail-row-waktu">
+                        <td class="text-left pl-6 font-bold text-slate-500 bg-slate-50/50 text-sm">Waktu</td>
+                        <td id="pop-time-biru" class="font-mono text-base text-slate-600">00:00</td>
+                        <td id="pop-time-merah" class="font-mono text-base text-slate-600">00:00</td>
+                    </tr>
+                    <tr>
+                        <td class="text-left pl-6 font-bold text-red-500 bg-slate-50/50 text-sm">Hukuman</td>
+                        <td id="pop-pen-biru" class="font-mono-score text-base text-red-500">0.00</td>
+                        <td id="pop-pen-merah" class="font-mono-score text-base text-red-500">0.00</td>
+                    </tr>
+                    <tr class="bg-slate-50 font-black">
+                        <td class="text-left pl-6 text-slate-800 uppercase italic text-sm">Total Score</td>
+                        <td id="pop-total-biru" class="text-4xl text-blue-700 font-black">0.00</td>
+                        <td id="pop-total-merah" class="text-4xl text-red-700 font-black">0.00</td>
+                    </tr>
+                    <tr id="row-sd">
+                        <td class="text-left pl-6 text-[10px] text-slate-400 uppercase bg-slate-50/30">Std. Deviasi</td>
+                        <td id="pop-sd-biru" class="text-[10px] font-mono text-slate-400">0.0000</td>
+                        <td id="pop-sd-merah" class="text-[10px] font-mono text-slate-400">0.0000</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2" class="popup-header text-left pl-6">Detail Point</th>
-                    <th colspan="2" class="popup-header">Score Result</th>
-                </tr>
-                <tr>
-                    <th class="bg-blue-600 text-white py-2 text-[10px] uppercase font-black">Biru</th>
-                    <th class="bg-red-600 text-white py-2 text-[10px] uppercase font-black">Merah</th>
-                </tr>
-            </thead>
-            <tbody id="popup-body-results">
-                <tr>
-                    <td class="text-left pl-6 font-bold italic text-slate-500 bg-slate-50/50 text-sm">Median Juri</td>
-                    <td id="pop-median-biru" class="font-mono-score text-xl text-blue-600">0.00</td>
-                    <td id="pop-median-merah" class="font-mono-score text-xl text-red-600">0.00</td>
-                </tr>
-                <tr>
-                    <td class="text-left pl-6 font-bold text-slate-500 bg-slate-50/50 text-sm">Waktu</td>
-                    <td id="pop-time-biru" class="font-mono text-base text-slate-600">00:00</td>
-                    <td id="pop-time-merah" class="font-mono text-base text-slate-600">00:00</td>
-                </tr>
-                <tr>
-                    <td class="text-left pl-6 font-bold text-red-500 bg-slate-50/50 text-sm">Hukuman</td>
-                    <td id="pop-pen-biru" class="font-mono-score text-base text-red-500">0.00</td>
-                    <td id="pop-pen-merah" class="font-mono-score text-base text-red-500">0.00</td>
-                </tr>
-                <tr class="bg-slate-50 font-black">
-                    <td class="text-left pl-6 text-slate-800 uppercase italic text-sm">Total Score</td>
-                    <td id="pop-total-biru" class="text-4xl text-blue-700 font-black">0.00</td>
-                    <td id="pop-total-merah" class="text-4xl text-red-700 font-black">0.00</td>
-                </tr>
-                <tr id="row-sd">
-                    <td class="text-left pl-6 text-[10px] text-slate-400 uppercase bg-slate-50/30">Std. Deviasi</td>
-                    <td id="pop-sd-biru" class="text-[10px] font-mono text-slate-400">0.0000</td>
-                    <td id="pop-sd-merah" class="text-[10px] font-mono text-slate-400">0.0000</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- POOL RESULT LEADERBOARD -->
+        <div id="view-pool" class="hidden w-full">
+            <div class="mb-6 p-4 text-center">
+                <div class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-2 rounded-full font-black text-sm uppercase tracking-widest mb-2">
+                    <i class="fas fa-list-ol"></i> Hasil Pool
+                </div>
+                <p id="pool-info-text" class="text-slate-500 text-sm font-bold uppercase tracking-widest"></p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="popup-header text-center px-4 py-3">Rank</th>
+                        <th class="popup-header text-left pl-4 py-3">Atlet</th>
+                        <th id="detail-pool-th-waktu" class="popup-header text-center py-3">Waktu</th>
+                        <th class="popup-header text-center py-3">Hukuman</th>
+                        <th class="bg-indigo-600 text-white py-3 text-[10px] uppercase font-black text-center">Total Skor</th>
+                    </tr>
+                </thead>
+                <tbody id="pool-leaderboard-body">
+                    <tr><td colspan="5" class="text-center text-slate-400 py-6 italic text-sm">Memuat hasil pool...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -145,22 +178,176 @@
 
         let currentScores = { biru: null, merah: null };
         let hasCelebrated = false;
+        let currentMode = 'versus';
+        let hideTimer = false;
+
+        function applyTimerVisibility() {
+            const rowWaktu = document.getElementById('detail-row-waktu');
+            const thWaktu = document.getElementById('detail-pool-th-waktu');
+            if(rowWaktu) rowWaktu.style.display = hideTimer ? 'none' : '';
+            if(thWaktu) thWaktu.style.display = hideTimer ? 'none' : '';
+        }
+
+        // Detect mode + hideTimer
+        db.ref('seni_match/config').once('value', snap => {
+            const config = snap.val();
+            currentMode = (config && config.matchMode) || 'versus';
+            if(typeof config.hideTimer !== 'undefined') {
+                hideTimer = config.hideTimer;
+            }
+            applyTimerVisibility();
+            if(currentMode === 'pool') {
+                document.getElementById('view-versus').classList.add('hidden');
+                document.getElementById('view-pool').classList.remove('hidden');
+                loadPoolResults();
+            }
+        });
+
+        function renderPoolLeaderboardFromSystem(athletes, winner) {
+            const tbody = document.getElementById('pool-leaderboard-body');
+            if(!athletes || athletes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-400 py-6 italic text-sm">Belum ada data pool.</td></tr>';
+                return;
+            }
+            const rankColors = ['bg-yellow-400', 'bg-slate-300', 'bg-amber-600'];
+            tbody.innerHTML = athletes.map((entry, i) => {
+                const rankBg = rankColors[i] || 'bg-slate-100';
+                const rankText = i < 3 ? ['🥇','🥈','🥉'][i] : `${i+1}`;
+                return `
+                    <tr class="${i === 0 ? 'bg-yellow-50' : ''}">
+                        <td class="text-center py-3">
+                            <span class="${rankBg} text-white font-black px-3 py-1 rounded-full text-sm">${rankText}</span>
+                        </td>
+                        <td class="text-left pl-4 py-3">
+                            <div class="font-black text-slate-800 text-sm">${entry.nama || '---'}</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">${entry.kontingen || '---'}</div>
+                        </td>
+                        ${hideTimer ? '' : `<td class="text-center font-mono text-sm text-slate-600 py-3">${entry.time_display || '00:00'}</td>`}
+                        <td class="text-center font-mono text-sm text-red-500 py-3">${parseFloat(entry.penalty || 0).toFixed(2)}</td>
+                        <td class="text-center font-black text-2xl text-indigo-700 py-3">${parseFloat(entry.final_score || 0).toFixed(3)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function loadPoolResults() {
+            db.ref('seni_match/pool_config').once('value', poolSnap => {
+                const poolCfg = poolSnap.val();
+                if(poolCfg) {
+                    document.getElementById('pool-info-text').innerText = `${poolCfg.kategori || ''} — ${poolCfg.poolInfo || ''}`;
+                }
+            });
+
+            // Coba baca dari system.poolLeaderboard dulu
+            db.ref('seni_match/system').once('value', sysSnap => {
+                const system = sysSnap.val();
+                if(system && system.poolLeaderboard && Array.isArray(system.poolLeaderboard)) {
+                    renderPoolLeaderboardFromSystem(system.poolLeaderboard, system.poolWinner);
+                    return;
+                }
+
+                // Fallback: baca dari history
+                db.ref('seni_match/history').on('value', snap => {
+                    const history = snap.val();
+                    if(!history) return;
+                    const tbody = document.getElementById('pool-leaderboard-body');
+                    const entries = Object.values(history).filter(h => h.poolMode || h.sudut === 'POOL');
+                    
+                    if(entries.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-400 py-6 italic text-sm">Belum ada data pool.</td></tr>';
+                        return;
+                    }
+
+                    const sorted = [...entries].sort((a, b) => parseFloat(b.final_score) - parseFloat(a.final_score));
+                    const rankColors = ['bg-yellow-400', 'bg-slate-300', 'bg-amber-600'];
+                    tbody.innerHTML = sorted.map((entry, i) => {
+                        const rankBg = rankColors[i] || 'bg-slate-100';
+                        const rankText = i < 3 ? ['🥇','🥈','🥉'][i] : `${i+1}`;
+                        return `
+                            <tr class="${i === 0 ? 'bg-yellow-50' : ''}">
+                                <td class="text-center py-3">
+                                    <span class="${rankBg} text-white font-black px-3 py-1 rounded-full text-sm">${rankText}</span>
+                                </td>
+                                <td class="text-left pl-4 py-3">
+                                    <div class="font-black text-slate-800 text-sm">${entry.nama || '---'}</div>
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase">${entry.kontingen || '---'}</div>
+                                </td>
+                                ${hideTimer ? '' : `<td class="text-center font-mono text-sm text-slate-600 py-3">${entry.time_display || '00:00'}</td>`}
+                                <td class="text-center font-mono text-sm text-red-500 py-3">${parseFloat(entry.penalty || 0).toFixed(2)}</td>
+                                <td class="text-center font-black text-2xl text-indigo-700 py-3">${entry.final_score || '0.00'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                });
+            });
+        }
 
         db.ref('seni_match/history').limitToLast(2).on('value', snap => {
+            if(currentMode === 'pool') return; // Pool uses loadPoolResults instead
             const history = snap.val();
             if(!history) return;
 
             Object.values(history).forEach(match => {
-                const sdt = match.sudut.toLowerCase();
+                const sdt = (match.sudut || '').toLowerCase();
+                if(sdt !== 'biru' && sdt !== 'merah') return;
                 currentScores[sdt] = match;
                 document.getElementById(`pop-median-${sdt}`).innerText = match.median_score || "0.00";
                 document.getElementById(`pop-time-${sdt}`).innerText = match.time_display || "00:00";
-                document.getElementById(`pop-pen-${sdt}`).innerText = match.penalty || "0.00";
+                document.getElementById(`pop-pen-${sdt}`).innerText = parseFloat(match.penalty || 0).toFixed(2);
                 document.getElementById(`pop-total-${sdt}`).innerText = match.final_score || "0.00";
                 document.getElementById(`pop-sd-${sdt}`).innerText = match.sd_score || "0.0000";
             });
+        });
 
-            processWinnerLogic();
+        // Baca system untuk tampilkan pemenang sesuai keputusan dewan
+        db.ref('seni_match/system').once('value', snap => {
+            const system = snap.val();
+            if(!system) return;
+
+            if(system.phase === 'FINISHED') {
+                // Override tampilan dengan data dari system.scores jika ada
+                if(system.scores) {
+                    const biru = system.scores.biru || {};
+                    const merah = system.scores.merah || {};
+                    document.getElementById('pop-median-biru').innerText = biru.median || "0.000";
+                    document.getElementById('pop-time-biru').innerText = biru.time || "00:00";
+                    document.getElementById('pop-pen-biru').innerText = biru.penalty || "0.00";
+                    document.getElementById('pop-total-biru').innerText = biru.final_score || "0.000";
+                    document.getElementById('pop-sd-biru').innerText = biru.sd || "0.0000";
+
+                    document.getElementById('pop-median-merah').innerText = merah.median || "0.000";
+                    document.getElementById('pop-time-merah').innerText = merah.time || "00:00";
+                    document.getElementById('pop-pen-merah').innerText = merah.penalty || "0.00";
+                    document.getElementById('pop-total-merah').innerText = merah.final_score || "0.000";
+                    document.getElementById('pop-sd-merah').innerText = merah.sd || "0.0000";
+
+                    const totalBiru = parseFloat(biru.final_score || 0);
+                    const totalMerah = parseFloat(merah.final_score || 0);
+                    currentScores.biru = { final_score: totalBiru, sd_score: biru.sd };
+                    currentScores.merah = { final_score: totalMerah, sd_score: merah.sd };
+                }
+
+                // Tampilkan pemenang sesuai keputusan dewan
+                if(system.winner && !hasCelebrated) {
+                    const winner = system.winner.toUpperCase();
+                    const isTie = parseFloat(currentScores.biru?.final_score || 0) === parseFloat(currentScores.merah?.final_score || 0);
+                    displayWinner(winner, isTie);
+                    hasCelebrated = true;
+                } else if(!hasCelebrated) {
+                    // Fallback: hitung dari currentScores
+                    processWinnerLogic();
+                }
+            } else if(system.phase === 'POOL_FINISHED') {
+                if(currentMode === 'pool') {
+                    document.getElementById('view-versus').classList.add('hidden');
+                    document.getElementById('view-pool').classList.remove('hidden');
+                    if(system.poolLeaderboard && Array.isArray(system.poolLeaderboard)) {
+                        renderPoolLeaderboardFromSystem(system.poolLeaderboard, system.poolWinner);
+                    } else {
+                        loadPoolResults();
+                    }
+                }
+            }
         });
 
         function fireConfetti(colorHex) {
@@ -218,11 +405,16 @@
 
         db.ref('seni_match/system').on('value', snap => {
             const system = snap.val();
-            if(!system || system.phase === 'waiting') {
-                document.getElementById('winner-banner').classList.add('hidden');
-                document.getElementById('row-sd').classList.remove('tie-breaker-active');
-                currentScores = { biru: null, merah: null };
-                hasCelebrated = false;
+            if(!system) return;
+            if(system.phase === 'waiting' || system.phase === 'peragaan' || system.phase === 'penilaian_akhir') {
+                // Active match, go back to scoreboard only in versus mode
+                if(currentMode !== 'pool') {
+                    document.getElementById('winner-banner').classList.add('hidden');
+                    document.getElementById('row-sd').classList.remove('tie-breaker-active');
+                    currentScores = { biru: null, merah: null };
+                    hasCelebrated = false;
+                    window.location.href = 'scoreboardjrs.html';
+                }
             }
         });
 // 1. Matikan Klik Kanan
