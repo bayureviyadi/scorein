@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>
+        if (localStorage.getItem('isAuth') !== 'true') {
+            window.location.href = '../../auth/login.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <title>Scoreboard</title>
     <link rel="stylesheet" href="../../assets/css/gelanggang/tanding/scoreboard.css">
@@ -20,7 +25,7 @@
 
 <div class="info-bar">
     <div id="dispBabak" style="font-weight: 900; color: var(--text-gold); text-transform: uppercase;">PENYISIHAN</div>
-    <div>KELAS <span id="dispKelas">...</span> • PARTAI <span id="dispPartai">0</span></div>
+    <div>KELAS <span id="dispKelas">...</span> â€¢ PARTAI <span id="dispPartai">0</span></div>
 </div>
 
 <div class="sub-header">
@@ -39,12 +44,12 @@
 
 <div class="scoreboard">
     <div class="penalty-side">
-        <div id="Biru-BN1" class="p-box">BN 1</div>
-        <div id="Biru-BN2" class="p-box">BN 2</div>
-        <div id="Biru-T1" class="p-box">TEGUR 1</div>
-        <div id="Biru-T2" class="p-box">TEGUR 2</div>
-        <div id="Biru-P1" class="p-box">P 1</div>
-        <div id="Biru-P2" class="p-box">P 2</div>
+        <div id="Biru-BN1" class="p-box"><img src="../../assets/img/Binaan 1.png" alt="BN 1"></div>
+        <div id="Biru-BN2" class="p-box"><img src="../../assets/img/Binaan 2.png" alt="BN 2"></div>
+        <div id="Biru-T1" class="p-box"><img src="../../assets/img/Teguran 1.png" alt="Teguran 1"></div>
+        <div id="Biru-T2" class="p-box"><img src="../../assets/img/Teguran 2.png" alt="Teguran 2"></div>
+        <div id="Biru-P1" class="p-box"><img src="../../assets/img/Pelanggaran 1.png" alt="Peringatan 1"></div>
+        <div id="Biru-P2" class="p-box"><img src="../../assets/img/Pelanggaran 2.png" alt="Peringatan 2"></div>
     </div>
     
     <div class="score-box" id="scoreBiru">0</div>
@@ -58,12 +63,12 @@
     <div class="score-box" id="scoreMerah">0</div>
     
     <div class="penalty-side">
-        <div id="Merah-BN1" class="p-box">BN 1</div>
-        <div id="Merah-BN2" class="p-box">BN 2</div>
-        <div id="Merah-T1" class="p-box">TEGUR 1</div>
-        <div id="Merah-T2" class="p-box">TEGUR 2</div>
-        <div id="Merah-P1" class="p-box">P 1</div>
-        <div id="Merah-P2" class="p-box">P 2</div>
+        <div id="Merah-BN1" class="p-box"><img src="../../assets/img/Binaan 1.png" alt="BN 1"></div>
+        <div id="Merah-BN2" class="p-box"><img src="../../assets/img/Binaan 2.png" alt="BN 2"></div>
+        <div id="Merah-T1" class="p-box"><img src="../../assets/img/Teguran 1.png" alt="Teguran 1"></div>
+        <div id="Merah-T2" class="p-box"><img src="../../assets/img/Teguran 2.png" alt="Teguran 2"></div>
+        <div id="Merah-P1" class="p-box"><img src="../../assets/img/Pelanggaran 1.png" alt="Peringatan 1"></div>
+        <div id="Merah-P2" class="p-box"><img src="../../assets/img/Pelanggaran 2.png" alt="Peringatan 2"></div>
     </div>
 </div>
 
@@ -83,6 +88,14 @@
         <div id="box-Merah-tendang-1" class="juri-box">J1 T</div>
         <div id="box-Merah-tendang-2" class="juri-box">J2 T</div>
         <div id="box-Merah-tendang-3" class="juri-box">J3 T</div>
+    </div>
+</div>
+
+<!-- VAR MODAL SCOREBOARD -->
+<div id="varModalScoreboard" class="var-modal-overlay">
+    <div class="var-modal-content">
+        <h1 class="var-title">VAR REVIEW</h1>
+        <h2 id="varJenisScoreboard" class="var-subtitle">MENUNGGU KEPUTUSAN...</h2>
     </div>
 </div>
 

@@ -1,6 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>
+        if (localStorage.getItem('isAuth') !== 'true') {
+            window.location.href = '../../auth/login.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Juri</title>
@@ -54,7 +59,7 @@
 <div class="footer">
     <div><span id="connDot" class="dot"></span><span id="connText">OFFLINE</span></div>
     <div id="pingText" style="opacity: 0.6;">-- ms</div>
-    <div onclick="toggleTheme()" style="cursor:pointer">🌓 TEMA</div>
+    <div onclick="toggleTheme()" style="cursor:pointer">ðŸŒ“ TEMA</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>

@@ -1,9 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
+    <script>
+        if (localStorage.getItem('isAuth') !== 'true') {
+            window.location.href = '../../auth/login.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scoring Tanding — TMS Silat</title>
+    <title>Scoring Tanding â€” TMS Silat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
@@ -45,7 +50,7 @@
         ::-webkit-scrollbar-track { background: var(--ink); }
         ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
 
-        /* ── BG ── */
+        /* â”€â”€ BG â”€â”€ */
         .bg-grid {
             position: fixed; inset: 0;
             background-image:
@@ -63,7 +68,7 @@
             pointer-events: none; z-index: 0;
         }
 
-        /* ── LAYOUT ── */
+        /* â”€â”€ LAYOUT â”€â”€ */
         .page {
             position: relative; z-index: 1;
             max-width: 1100px;
@@ -71,7 +76,7 @@
             padding: 0 2rem 5rem;
         }
 
-        /* ── TOPBAR ── */
+        /* â”€â”€ TOPBAR â”€â”€ */
         .topbar {
             display: flex;
             align-items: center;
@@ -124,7 +129,7 @@
         }
         .btn-logout:hover { background: rgba(192,57,43,0.18); border-color: var(--red); }
 
-        /* ── HEADER ── */
+        /* â”€â”€ HEADER â”€â”€ */
         .page-header {
             display: flex; align-items: flex-end; justify-content: space-between;
             flex-wrap: wrap; gap: 1.5rem; margin-bottom: 3rem;
@@ -143,7 +148,7 @@
         }
         .header-title em { font-family: var(--font-serif); font-style: italic; color: var(--gold); }
 
-        /* ── MATCH STATUS STRIP ── */
+        /* â”€â”€ MATCH STATUS STRIP â”€â”€ */
         .status-strip {
             display: flex; align-items: center; gap: 1.5rem;
             padding: 1rem 1.5rem;
@@ -169,7 +174,7 @@
         }
         @keyframes live-pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-        /* ── SECTION LABEL ── */
+        /* â”€â”€ SECTION LABEL â”€â”€ */
         .section-label {
             font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
             color: var(--text-faint); margin-bottom: 1.25rem;
@@ -177,7 +182,7 @@
         }
         .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        /* ── MAIN GRID ── */
+        /* â”€â”€ MAIN GRID â”€â”€ */
         .main-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -188,7 +193,7 @@
         }
         @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
 
-        /* ── CARD BASE ── */
+        /* â”€â”€ CARD BASE â”€â”€ */
         .menu-card {
             background: var(--ink);
             cursor: pointer;
@@ -269,7 +274,7 @@
         .menu-card:hover .card-cta { opacity: 1; transform: translateX(0); }
         .cta-line { width: 24px; height: 1px; }
 
-        /* ── COLOR THEMES ── */
+        /* â”€â”€ COLOR THEMES â”€â”€ */
         /* control / amber */
         .theme-amber .card-accent    { background: var(--amber); }
         .theme-amber .card-icon      { color: var(--amber); }
@@ -297,7 +302,7 @@
         .theme-emerald .cta-line       { background: var(--emerald); }
         .theme-emerald .card-corner    { border-right: 34px solid rgba(16,185,129,0.2); border-top: 34px solid transparent; }
 
-        /* ── JURI SECTION ── */
+        /* â”€â”€ JURI SECTION â”€â”€ */
         .juri-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -350,7 +355,7 @@
         }
         .juri-card:hover .juri-badge { opacity: 1; transform: translateX(0); }
 
-        /* ── LOGOUT MODAL ── */
+        /* â”€â”€ LOGOUT MODAL â”€â”€ */
         .modal-bg {
             position: fixed; inset: 0; z-index: 200;
             background: rgba(0,0,0,0.85);
@@ -369,13 +374,13 @@
         .btn-confirm { flex: 1; padding: 12px; background: var(--red); border: none; color: #fff; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
         .btn-confirm:hover { background: var(--red-bright); }
 
-        /* ── REVEAL ── */
+        /* â”€â”€ REVEAL â”€â”€ */
         .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         .d1 { transition-delay: 0.05s; } .d2 { transition-delay: 0.1s; }
         .d3 { transition-delay: 0.15s; } .d4 { transition-delay: 0.2s; }
 
-        /* ── FOOTER ── */
+        /* â”€â”€ FOOTER â”€â”€ */
         .page-footer {
             margin-top: 3.5rem; padding-top: 2rem;
             border-top: 1px solid var(--border);
@@ -400,7 +405,7 @@
                 <div class="logo-badge">IN</div>
             </a>
             <div class="breadcrumb">
-                Operator <span class="breadcrumb-sep">›</span>
+                Operator <span class="breadcrumb-sep">â€º</span>
                 <span>Tanding</span>
             </div>
         </div>
@@ -555,8 +560,8 @@
 
     <!-- FOOTER -->
     <div class="page-footer reveal">
-        <p>SCORE<span>IN</span> © 2026</p>
-        <p><span>Scoring</span> · Tanding</p>
+        <p>Tournament Management System Â· <span>TMS Silat</span> Â© 2026</p>
+        <p><span>Scoring</span> Â· Tanding</p>
     </div>
 
 </div>
@@ -584,7 +589,7 @@
 <script src="../../assets/js/auth-check.js"></script>
 
 <script>
-    // ── THEME ──
+    // â”€â”€ THEME â”€â”€
     let isDark = true;
     if (localStorage.getItem('theme') === 'light') {
         isDark = false; applyTheme();
@@ -615,7 +620,7 @@
         }
     }
 
-    // ── MODAL ──
+    // â”€â”€ MODAL â”€â”€
     function openModal()  { document.getElementById('logoutModal').classList.add('open'); }
     function closeModal() { document.getElementById('logoutModal').classList.remove('open'); }
     document.getElementById('logoutModal').addEventListener('click', e => {
@@ -626,13 +631,13 @@
         window.location.href = '../../auth/login.html?role=operator';
     }
 
-    // ── REVEAL ──
+    // â”€â”€ REVEAL â”€â”€
     const obs = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-    // ── SECURITY ──
+    // â”€â”€ SECURITY â”€â”€
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
         if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73,74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
