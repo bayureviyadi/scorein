@@ -1,0 +1,368 @@
+/* ============================================================
+   DEWAN-VAR.CSS
+   Extension dari dewan.css untuk fitur VAR Verification.
+   Semua warna & radius menggunakan variable yang sudah ada di dewan.css.
+   ============================================================ */
+
+/* ── Warna VAR (tidak ada di dewan.css, didefinisikan lokal) ── */
+:root {
+    --var-gold:        #f59e0b;
+    --var-gold-dim:    rgba(245, 158, 11, 0.15);
+    --var-gold-border: rgba(245, 158, 11, 0.4);
+    --var-invalid-bg:  rgba(245, 158, 11, 0.12);
+}
+
+/* ── Warna tegur (konsisten dengan btn-p di dewan.css) ── */
+.btn-tegur { color: #f59e0b; }
+
+/* ======================================================
+   VAR TRIGGER BAR
+   Bar kuning tipis di bawah match-layout, berisi 2 tombol.
+   Menggunakan .btn-action base dari dewan.css.
+   ====================================================== */
+.var-trigger-bar {
+    display: flex;
+    gap: 8px;
+    padding: 8px 5px;
+    background: var(--var-gold-dim);
+    border-top: 2px solid var(--var-gold-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.btn-var {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    text-transform: uppercase;
+    border-bottom: 3px solid rgba(0,0,0,0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-var:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+}
+
+.btn-var-pelanggaran {
+    background: var(--red-corner);
+    color: #fff;
+}
+.btn-var-jatuhan {
+    background: var(--blue-corner);
+    color: #fff;
+}
+
+/* ======================================================
+   VAR MODAL OVERLAY
+   Fullscreen overlay, muncul di atas semua elemen.
+   ====================================================== */
+.var-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.85);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 16px;
+}
+.var-modal-overlay.open {
+    display: flex;
+}
+
+/* ── Modal Box ── */
+.var-modal-box {
+    background: var(--card-bg);
+    border: 2px solid var(--var-gold-border);
+    width: 100%;
+    max-width: 460px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow), 0 0 40px rgba(245, 158, 11, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Pulse saat menunggu vote */
+@keyframes varPulse {
+    0%, 100% { box-shadow: var(--shadow), 0 0 20px rgba(245,158,11,0.25); }
+    50%       { box-shadow: var(--shadow), 0 0 50px rgba(245,158,11,0.65); }
+}
+.var-modal-box.waiting {
+    animation: varPulse 1.8s ease-in-out infinite;
+}
+
+/* ── Header strip kuning ── */
+.var-modal-header {
+    background: var(--var-gold);
+    padding: 9px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.var-header-badge {
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #000;
+    background: rgba(0,0,0,0.15);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+.var-header-title {
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #000;
+}
+
+/* ── Tipe verifikasi (Pelanggaran / Jatuhan) ── */
+.var-modal-type {
+    text-align: center;
+    padding: 12px 16px 6px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--var-gold);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+
+/* ── Teks menunggu ── */
+.var-waiting-text {
+    text-align: center;
+    padding: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-main);
+    opacity: 0.5;
+}
+
+/* ======================================================
+   KOTAK VOTE JURI 1 / 2 / 3
+   Default abu, berubah warna sesuai vote.
+   ====================================================== */
+.var-juri-votes {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px 6px;
+    justify-content: center;
+}
+
+.var-vote-box {
+    flex: 1;
+    border-radius: 6px;
+    padding: 12px 6px;
+    text-align: center;
+    border: 2px solid rgba(128,128,128,0.2);
+    background: rgba(128,128,128,0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.var-vote-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-main);
+    opacity: 0.5;
+    margin-bottom: 6px;
+}
+
+.var-vote-result {
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: rgba(128,128,128,0.4);
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* State: BIRU */
+.var-vote-box.vote-biru {
+    border-color: var(--blue-corner);
+    background: var(--bg-stat-blue);
+}
+.var-vote-box.vote-biru .var-vote-result {
+    color: var(--blue-corner);
+}
+
+/* State: MERAH */
+.var-vote-box.vote-merah {
+    border-color: var(--red-corner);
+    background: var(--bg-stat-red);
+}
+.var-vote-box.vote-merah .var-vote-result {
+    color: var(--red-corner);
+}
+
+/* State: INVALID (kuning) */
+.var-vote-box.vote-invalid {
+    border-color: var(--var-gold);
+    background: var(--var-invalid-bg);
+}
+.var-vote-box.vote-invalid .var-vote-result {
+    color: var(--var-gold);
+}
+
+/* ======================================================
+   TALLY BAR (BIRU: X / MERAH: X / INV: X)
+   ====================================================== */
+.var-tally-bar {
+    display: flex;
+    gap: 6px;
+    padding: 6px 16px 10px;
+}
+
+.var-tally-chip {
+    flex: 1;
+    text-align: center;
+    padding: 5px 4px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1.5px solid transparent;
+}
+
+.var-tally-biru {
+    background: var(--bg-stat-blue);
+    color: var(--blue-corner);
+    border-color: var(--blue-corner);
+}
+.var-tally-merah {
+    background: var(--bg-stat-red);
+    color: var(--red-corner);
+    border-color: var(--red-corner);
+}
+.var-tally-invalid {
+    background: var(--var-invalid-bg);
+    color: var(--var-gold);
+    border-color: var(--var-gold);
+}
+
+/* ======================================================
+   HASIL MAYORITAS
+   ====================================================== */
+.var-majority {
+    text-align: center;
+    padding: 8px 16px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    min-height: 34px;
+    color: var(--text-main);
+    opacity: 0.5;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid rgba(128,128,128,0.12);
+}
+
+.var-majority.majority-biru {
+    color: var(--blue-corner);
+    opacity: 1;
+    background: var(--bg-stat-blue);
+}
+.var-majority.majority-merah {
+    color: var(--red-corner);
+    opacity: 1;
+    background: var(--bg-stat-red);
+}
+.var-majority.majority-invalid {
+    color: var(--var-gold);
+    opacity: 1;
+    background: var(--var-invalid-bg);
+}
+
+/* ======================================================
+   ACTION BUTTONS (pakai .btn-action base dari dewan.css)
+   ====================================================== */
+.var-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px 14px;
+    border-top: 1px solid rgba(128,128,128,0.15);
+}
+
+/* Tombol batal — abu-abu netral */
+.btn-var-cancel {
+    flex: 1;
+    background: rgba(128,128,128,0.12);
+    color: var(--text-main);
+    opacity: 0.7;
+    font-size: 0.75rem;
+    border-bottom: 3px solid rgba(0,0,0,0.15);
+}
+.btn-var-cancel:hover { opacity: 1; }
+
+/* Tombol konfirmasi — hijau, disabled by default */
+.btn-var-confirm {
+    flex: 2;
+    background: rgba(16, 185, 129, 0.2);   /* --round-active dim */
+    color: var(--round-active);
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    opacity: 0.35;
+    pointer-events: none;
+    border: 1.5px solid var(--round-active);
+    border-bottom: 3px solid rgba(0,0,0,0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Aktif setelah ada mayoritas */
+.btn-var-confirm.ready {
+    opacity: 1;
+    pointer-events: all;
+    background: var(--round-active);
+    color: #fff;
+}
+
+/* ======================================================
+   THEME OVERRIDES
+   Selaraskan tampilan VAR dengan semua tema dewan.css.
+   ====================================================== */
+
+/* Night */
+[data-theme="night"] .var-modal-box {
+    border-color: rgba(245,158,11,0.5);
+}
+
+/* Sporty — radius 0, border tebal */
+[data-theme="sporty"] .var-modal-box {
+    border-width: 3px;
+    border-color: var(--var-gold);
+}
+[data-theme="sporty"] .var-modal-header {
+    border-radius: 0;
+}
+[data-theme="sporty"] .var-trigger-bar {
+    border-radius: 0;
+}
+
+/* Olympic — radius besar, warna emas */
+[data-theme="olympic"] .var-header-badge {
+    background: rgba(0,0,0,0.2);
+}
+[data-theme="olympic"] .var-modal-box {
+    border-color: var(--text-main);
+}
+[data-theme="olympic"] .var-majority.majority-biru {
+    color: var(--blue-corner);
+    background: rgba(0,133,199,0.15);
+}
+[data-theme="olympic"] .var-majority.majority-merah {
+    color: var(--red-corner);
+    background: rgba(223,0,36,0.15);
+}
